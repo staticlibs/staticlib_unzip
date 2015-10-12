@@ -122,7 +122,7 @@ private:
         stream.avail_out = len_out;
         // call inflate
         auto err = ::inflate(std::addressof(stream), Z_FINISH);
-        if (Z_OK == err || Z_STREAM_END == err || (Z_BUF_ERROR == err && 0 == stream.avail_in)) {
+        if (Z_OK == err || Z_STREAM_END == err || Z_BUF_ERROR) {
             std::streamsize read = avail - stream.avail_in;
             std::streamsize written = len_out - stream.avail_out;
             size_t uread = static_cast<size_t>(read);

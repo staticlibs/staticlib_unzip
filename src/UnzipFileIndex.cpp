@@ -46,11 +46,13 @@ struct CentralDirectory {
 
 struct NamedFileEntry {
     std::string name;
+    uint16_t cd_en_size;
     FileEntry entry;
 
-    NamedFileEntry(std::string name, int32_t offset, int32_t comp_length, 
+    NamedFileEntry(std::string name, uint16_t cd_en_size, int32_t offset, int32_t comp_length, 
             int32_t uncomp_length, uint16_t comp_method) :
     name(std::move(name)),
+    cd_en_size(cd_en_size),
     entry(offset, comp_length, uncomp_length, comp_method) { }
         
     bool is_file() {
@@ -126,7 +128,7 @@ private:
         uint32_t sig = io::read_32_le<uint32_t>(src);
         if (ZIP_CD_START_SIGNATURE != sig) {
             throw UnzipException(TRACEMSG(std::string{} +
-                    "Cannot find Central Directory file header an alleged zip file: [" + zip_file_path + "]," +
+                    "Cannot find Central Directory file header in an alleged zip file: [" + zip_file_path + "]," +
                     " invalid signature: [" + su::to_string(sig) + "]," +
                     " must be: [" + su::to_string(ZIP_CD_START_SIGNATURE) + "]"));
         }
@@ -146,7 +148,7 @@ private:
         io::read_exact(src, std::addressof(filename.front()), namelen);
         // skip extra and comment
         io::skip(src, skip.data(), skip.size(), extralen + commentlen);
-        return NamedFileEntry(std::move(filename), offset, comp_length, uncomp_length, comp_method);
+        return NamedFileEntry(std::move(filename), 46 + namelen + extralen + commentlen, offset, comp_length, uncomp_length, comp_method);
     }
 };
 PIMPL_FORWARD_CONSTRUCTOR(UnzipFileIndex, (std::string), (), UnzipException)

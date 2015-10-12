@@ -52,8 +52,6 @@ public:
             inflateEnd(std::addressof(stream));
         } catch(...) {
             // ignore
-            // todo: removeme
-            throw;
         }
     }
     

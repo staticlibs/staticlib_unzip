@@ -25,7 +25,8 @@ void test_read_inflate() {
     io::streambuf_source src{ptr.get()};
     std::array<char, 8192> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
-    std::cout << out.str() << std::endl;
+//    std::cout << "[" << out.str() << "]" << std::endl;
+    assert("bbbbbbbb\n" == out.str());
 }
 
 void test_read_store() {
@@ -36,7 +37,8 @@ void test_read_store() {
     io::streambuf_source src{ptr.get()};
     std::array<char, 8192> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
-    std::cout << out.str() << std::endl;
+//    std::cout << "[" << out.str() << "]" << std::endl;
+    assert("aaa\n" == out.str());
 }
 
 

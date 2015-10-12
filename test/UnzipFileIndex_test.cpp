@@ -6,6 +6,7 @@
  */
 
 #include <iostream>
+#include <cassert>
 
 #include "staticlib/unzip/UnzipFileIndex.hpp"
 
@@ -14,11 +15,22 @@ namespace uz = staticlib::unzip;
 int main() {
     uz::UnzipFileIndex idx{"../test/bundle.zip"};
     auto desc_aaa = idx.find_zip_entry("bundle/aaa.txt");
-    std::cout << desc_aaa.offset << " " << desc_aaa.comp_length << std::endl;
-    auto desc_bbbb = idx.find_zip_entry("bundle/bbbb.txt");
-    std::cout << desc_bbbb.offset << " " << desc_bbbb.comp_length << std::endl;
+    assert(144 == desc_aaa.offset);
+    assert(4 == desc_aaa.comp_length);
+    assert(4 == desc_aaa.uncomp_length);
+    assert(0 == desc_aaa.comp_method);
+    auto desc_bbbb = idx.find_zip_entry("bundle/bbbb.txt");    
+    (void) desc_bbbb;
+    assert(65 == desc_bbbb.offset);
+    assert(6 == desc_bbbb.comp_length);
+    assert(9 == desc_bbbb.uncomp_length);
+    assert(8 == desc_bbbb.comp_method);
     auto desc_fail = idx.find_zip_entry("bundle/fail.txt");
-    std::cout << desc_fail.offset << " " << desc_fail.comp_length << std::endl;
+    (void) desc_fail;
+    assert(-1 == desc_fail.offset);
+    assert(-1 == desc_fail.comp_length);
+    assert(-1 == desc_fail.uncomp_length);
+    assert(0 == desc_fail.comp_method);
 
     return 0;
 }

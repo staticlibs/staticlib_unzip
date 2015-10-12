@@ -5,14 +5,15 @@
  * Created on October 8, 2015, 8:03 PM
  */
 
-#include <iostream>
-
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+
+// http://stackoverflow.com/a/1904659/314015
+#define NOMINMAX
 
 #include "zlib.h"
 
@@ -38,7 +39,7 @@ struct CentralDirectory {
     uint32_t offset;
     uint16_t records_count;
     
-    CentralDirectory(std::streamsize offset, std::streamsize records_count) :
+    CentralDirectory(uint32_t offset, uint16_t records_count) :
     offset(offset), 
     records_count(records_count) { }
 };

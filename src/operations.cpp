@@ -5,14 +5,16 @@
  * Created on October 11, 2015, 10:21 PM
  */
 
-#include <iostream>
-
 #include <ios>
 #include <string>
 #include <array>
+#include <algorithm>
 #include <cstring>
 
 #include "zlib.h"
+
+// http://stackoverflow.com/a/1904659/314015
+#define NOMINMAX
 
 #include "staticlib/utils.hpp"
 #include "staticlib/io.hpp"
@@ -40,7 +42,7 @@ class UnzipEntrySource {
     FileEntry entry; 
     
     z_stream stream;
-    std::array<char, 8192> buf{{}};
+    std::array<char, 8192> buf;
     size_t pos = 0;
     size_t avail = 0;
     size_t count_in = 0;
@@ -123,9 +125,10 @@ private:
         if (Z_OK == err || Z_STREAM_END == err || (Z_BUF_ERROR == err && 0 == stream.avail_in)) {
             std::streamsize read = avail - stream.avail_in;
             std::streamsize written = len_out - stream.avail_out;
-            pos += read;
-            avail -= read;
-            avail_out -= written;
+            size_t uread = static_cast<size_t>(read);
+            pos += uread;
+            avail -= uread;
+            avail_out -= static_cast<size_t>(written);
             if (written > 0 || Z_STREAM_END != err) {
                 return written;
             }

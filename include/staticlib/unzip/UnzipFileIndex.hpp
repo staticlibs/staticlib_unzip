@@ -21,11 +21,19 @@ struct FileEntry {
     int32_t offset = -1;
     int32_t comp_length = -1;
     int32_t uncomp_length = -1;
+    uint16_t comp_method = 0;
 
-    FileEntry(int32_t offset, int32_t comp_length, int32_t uncomp_length) :
+    FileEntry() { }
+    
+    FileEntry(int32_t offset, int32_t comp_length, int32_t uncomp_length, uint16_t comp_method) :
     offset(offset),
     comp_length(comp_length),
-    uncomp_length(uncomp_length) { }
+    uncomp_length(uncomp_length),
+    comp_method(comp_method) { }
+    
+    bool is_empty() {
+        return -1 == offset;
+    }
 };
 
 class UnzipFileIndex : public staticlib::pimpl::PimplObject {

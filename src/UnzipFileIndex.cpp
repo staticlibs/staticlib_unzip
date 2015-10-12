@@ -47,25 +47,15 @@ struct NamedFileEntry {
     std::string name;
     FileEntry entry;
 
-    NamedFileEntry(std::string name, int32_t offset, int32_t comp_length, int32_t uncomp_length) :
+    NamedFileEntry(std::string name, int32_t offset, int32_t comp_length, 
+            int32_t uncomp_length, uint16_t comp_method) :
     name(std::move(name)),
-    entry(offset, comp_length, uncomp_length) { }
+    entry(offset, comp_length, uncomp_length, comp_method) { }
         
     bool is_file() {
         return '/' != name.back();
     }
     
-    int32_t get_offset() {
-        return entry.offset;
-    }
-
-    int32_t get_comp_length() {
-        return entry.comp_length;
-    }
-
-    int32_t get_uncomp_length() {
-        return entry.uncomp_length;
-    }
 };
 
 }
@@ -86,9 +76,7 @@ public:
         for (int i = 0; i < cd.records_count; i++) {
             auto en = read_next_entry(src);
             if (en.is_file()) {
-                auto res = en_map.emplace(std::piecewise_construct, 
-                        std::forward_as_tuple(std::move(en.name)), // key
-                        std::forward_as_tuple(en.get_offset(), en.get_comp_length(), en.get_uncomp_length())); // value
+                auto res = en_map.emplace(std::move(en.name), en.entry); // value
                 if (!res.second) throw UnzipException(TRACEMSG(std::string{} +
                         "Invalid Duplicate entry: [" + (res.first)->first + "] in a zip file: [" + this->zip_file_path + "]"));
             }
@@ -100,7 +88,7 @@ public:
         if(res != en_map.end()) {
             return res->second;
         } else {
-            return {-1, -1, -1};
+            return FileEntry{};
         }
     }
     
@@ -142,7 +130,9 @@ private:
                     " must be: [" + su::to_string(ZIP_CD_START_SIGNATURE) + "]"));
         }
         std::array<char, 32> skip;
-        io::skip(src, skip.data(), skip.size(), 16);
+        io::skip(src, skip.data(), skip.size(), 6);
+        uint16_t comp_method = io::read_16_le<uint16_t>(src);
+        io::skip(src, skip.data(), skip.size(), 8);
         int32_t comp_length = io::read_32_le<int32_t>(src);
         int32_t uncomp_length = io::read_32_le<int32_t>(src);
         uint16_t namelen = io::read_16_le<uint16_t>(src);
@@ -155,7 +145,7 @@ private:
         io::read_exact(src, std::addressof(filename.front()), namelen);
         // skip extra and comment
         io::skip(src, skip.data(), skip.size(), extralen + commentlen);
-        return NamedFileEntry(std::move(filename), offset, comp_length, uncomp_length);
+        return NamedFileEntry(std::move(filename), offset, comp_length, uncomp_length, comp_method);
     }
 };
 PIMPL_FORWARD_CONSTRUCTOR(UnzipFileIndex, (std::string), (), UnzipException)

@@ -26,6 +26,9 @@ project ( staticlib_unzip_test CXX )
 include ( ${STATICLIB_CMAKE}/staticlibs_common.cmake )
 
 # dependencies
+if ( NOT STATICLIB_TOOLCHAIN MATCHES "linux_[^_]+_[^_]+" )
+    staticlib_add_subdirectory ( ../deps external_zlib )
+endif ( )
 staticlib_add_subdirectory ( ../deps staticlib_utils )
 staticlib_add_subdirectory ( ../deps staticlib_pimpl )
 staticlib_add_subdirectory ( ../deps staticlib_io )

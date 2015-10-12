@@ -43,23 +43,13 @@ struct CentralDirectory {
     records_count(records_count) { }
 };
 
-struct FileEntry {
-    int32_t offset = -1;
-    int32_t length = -1;
-    
-    FileEntry(int32_t offset, int32_t length) :
-    offset(offset),
-    length(length) { }
-    
-};
-
 struct NamedFileEntry {
     std::string name;
     FileEntry entry;
 
-    NamedFileEntry(std::string name, int32_t offset, int32_t length) :
+    NamedFileEntry(std::string name, int32_t offset, int32_t comp_length, int32_t uncomp_length) :
     name(std::move(name)),
-    entry(offset, length) { }
+    entry(offset, comp_length, uncomp_length) { }
         
     bool is_file() {
         return '/' != name.back();
@@ -69,8 +59,12 @@ struct NamedFileEntry {
         return entry.offset;
     }
 
-    int32_t get_length() {
-        return entry.length;
+    int32_t get_comp_length() {
+        return entry.comp_length;
+    }
+
+    int32_t get_uncomp_length() {
+        return entry.uncomp_length;
     }
 };
 
@@ -94,19 +88,19 @@ public:
             if (en.is_file()) {
                 auto res = en_map.emplace(std::piecewise_construct, 
                         std::forward_as_tuple(std::move(en.name)), // key
-                        std::forward_as_tuple(en.get_offset(), en.get_length())); // value
+                        std::forward_as_tuple(en.get_offset(), en.get_comp_length(), en.get_uncomp_length())); // value
                 if (!res.second) throw UnzipException(TRACEMSG(std::string{} +
                         "Invalid Duplicate entry: [" + (res.first)->first + "] in a zip file: [" + this->zip_file_path + "]"));
             }
         }
     }
     
-    std::pair<int32_t, int32_t> find_zip_entry(const UnzipFileIndex&, const std::string& name) const {
+    FileEntry find_zip_entry(const UnzipFileIndex&, const std::string& name) const {
         auto res = en_map.find(name);
         if(res != en_map.end()) {
-            return {res->second.offset, res->second.length};
+            return res->second;
         } else {
-            return {-1, -1};
+            return {-1, -1, -1};
         }
     }
     
@@ -149,8 +143,8 @@ private:
         }
         std::array<char, 32> skip;
         io::skip(src, skip.data(), skip.size(), 16);
-        uint32_t length = io::read_32_le<uint32_t>(src);
-        io::skip(src, skip.data(), skip.size(), 4);
+        int32_t comp_length = io::read_32_le<int32_t>(src);
+        int32_t uncomp_length = io::read_32_le<int32_t>(src);
         uint16_t namelen = io::read_16_le<uint16_t>(src);
         uint16_t extralen = io::read_16_le<uint16_t>(src);
         uint16_t commentlen = io::read_16_le<uint16_t>(src);
@@ -161,12 +155,11 @@ private:
         io::read_exact(src, std::addressof(filename.front()), namelen);
         // skip extra and comment
         io::skip(src, skip.data(), skip.size(), extralen + commentlen);
-        return NamedFileEntry(std::move(filename), offset, length);
+        return NamedFileEntry(std::move(filename), offset, comp_length, uncomp_length);
     }
 };
 PIMPL_FORWARD_CONSTRUCTOR(UnzipFileIndex, (std::string), (), UnzipException)
-typedef std::pair<int32_t, int32_t> find_zip_entry_res_type;    
-PIMPL_FORWARD_METHOD(UnzipFileIndex, find_zip_entry_res_type, find_zip_entry, (const std::string&), (const), UnzipException)
+PIMPL_FORWARD_METHOD(UnzipFileIndex, FileEntry, find_zip_entry, (const std::string&), (const), UnzipException)
 PIMPL_FORWARD_METHOD(UnzipFileIndex, const std::string&, get_zip_file_path, (), (const), UnzipException)        
 
 } // namespace

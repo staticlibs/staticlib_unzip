@@ -16,7 +16,11 @@
 namespace staticlib {
 namespace unzip {
 
-std::unique_ptr<std::streambuf> open_zip_entry_unbuffered(const UnzipFileIndex& idx, const std::string& entry_name);
+std::unique_ptr<std::streambuf> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name);
+
+void test_direct();
+
+void test_mini();
 
 } // namespace
 }

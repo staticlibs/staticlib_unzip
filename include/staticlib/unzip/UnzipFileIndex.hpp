@@ -17,6 +17,17 @@
 namespace staticlib {
 namespace unzip {
 
+struct FileEntry {
+    int32_t offset = -1;
+    int32_t comp_length = -1;
+    int32_t uncomp_length = -1;
+
+    FileEntry(int32_t offset, int32_t comp_length, int32_t uncomp_length) :
+    offset(offset),
+    comp_length(comp_length),
+    uncomp_length(uncomp_length) { }
+};
+
 class UnzipFileIndex : public staticlib::pimpl::PimplObject {
 protected:
     /**
@@ -33,7 +44,7 @@ public:
             
     UnzipFileIndex(std::string zip_file_path);
     
-    std::pair<int32_t, int32_t> find_zip_entry(const std::string& name) const;
+    FileEntry find_zip_entry(const std::string& name) const;
     
     const std::string& get_zip_file_path() const;
 };

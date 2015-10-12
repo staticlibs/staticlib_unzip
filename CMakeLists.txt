@@ -46,6 +46,9 @@ target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE
         ${${PROJECT_NAME}_INCLUDES}         
         ${${PROJECT_NAME}_DEP_PC_INCLUDE_DIRS} )
 target_compile_options ( ${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_DEP_PC_CFLAGS_OTHER} )
+if ( TARGET external_zlib )
+    add_dependencies ( ${PROJECT_NAME} external_zlib )
+endif ( )
 
 # pkg-config
 if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )

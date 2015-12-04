@@ -5,6 +5,9 @@
  * Created on October 11, 2015, 10:21 PM
  */
 
+
+#include "staticlib/unzip/operations.hpp"
+
 #include <ios>
 #include <string>
 #include <array>
@@ -16,20 +19,23 @@
 // http://stackoverflow.com/a/1904659/314015
 #define NOMINMAX
 
-#include "staticlib/utils.hpp"
+#include "staticlib/config.hpp"
+#include "staticlib/endian.hpp"
 #include "staticlib/io.hpp"
+#include "staticlib/utils.hpp"
 
 #include "staticlib/unzip/UnzipException.hpp"
-#include "staticlib/unzip/UnzipFileIndex.hpp"
-#include "staticlib/unzip/operations.hpp"
+
 
 namespace staticlib {
 namespace unzip {
 
 namespace { // anonymous
 
+namespace sc = staticlib::config;
 namespace su = staticlib::utils;
 namespace io = staticlib::io;
+namespace en = staticlib::endian;
 
 const uint32_t ZIP_CD_START_SIGNATURE = 0x04034b50;
 const uint16_t ZLIB_METHOD_STORE = 0x00;
@@ -75,7 +81,7 @@ public:
             case ZLIB_METHOD_STORE: return read_store(buffer, len_out);
             case ZLIB_METHOD_INFLATE: return read_inflate(buffer, len_out);
             default: throw UnzipException(TRACEMSG(std::string{} +
-                    "Unsupported compression method: [" + su::to_string(entry.comp_method) + "],"
+                    "Unsupported compression method: [" + sc::to_string(entry.comp_method) + "],"
                     " in entry: [" + zip_entry_name + "],"
                     " in ZIP file: [" + zip_file_path + "]"));
             }
@@ -85,18 +91,18 @@ public:
     
 private:
     void check_header() {
-        uint32_t sig = io::read_32_le<uint32_t>(fd);
+        uint32_t sig = en::read_32_le<uint32_t>(fd);
         if (ZIP_CD_START_SIGNATURE != sig) {
             throw UnzipException(TRACEMSG(std::string{} +
             "Cannot find local file header an alleged zip file: [" + zip_file_path + "],"
-                    " position: [" + su::to_string(entry.offset) + "]," +
-                    " invalid signature: [" + su::to_string(sig) + "]," +
-                    " must be: [" + su::to_string(ZIP_CD_START_SIGNATURE) + "]"));
+                    " position: [" + sc::to_string(entry.offset) + "]," +
+                    " invalid signature: [" + sc::to_string(sig) + "]," +
+                    " must be: [" + sc::to_string(ZIP_CD_START_SIGNATURE) + "]"));
         }
         std::array<char, 32> skip;
         io::skip(fd, skip.data(), skip.size(), 22);
-        uint16_t namelen = io::read_16_le<uint16_t>(fd);
-        uint16_t exlen = io::read_16_le<uint16_t>(fd);
+        uint16_t namelen = en::read_16_le<uint16_t>(fd);
+        uint16_t exlen = en::read_16_le<uint16_t>(fd);
         io::skip(fd, skip.data(), skip.size(), namelen + exlen);
     }
     
@@ -159,8 +165,8 @@ std::unique_ptr<std::streambuf> open_zip_entry(const UnzipFileIndex& idx, const 
         throw UnzipException(TRACEMSG(std::string{} + 
                 "Error opening zip entry: [" + entry_name + "]" +
                 " from zip file: [" + idx.get_zip_file_path() + "]" +
-                " with offset: [" + su::to_string(desc.offset) + "]," +
-                " length: [" + su::to_string(desc.comp_length) + "]" +
+                " with offset: [" + sc::to_string(desc.offset) + "]," +
+                " length: [" + sc::to_string(desc.comp_length) + "]" +
                 "\n" + e.what()));
     }
 }

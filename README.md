@@ -5,7 +5,7 @@ This project is a part of [Staticlibs](http://staticlibs.net/).
 
 This project allows to open "input streams" to entries inside the ZIP file.
 
-Link to [API documentation](http://staticlibs.net/staticlib_unzip/docs/html/namespacestaticlib_1_1unzip.html).
+Link to the [API documentation](http://staticlibs.net/staticlib_unzip/docs/html/namespacestaticlib_1_1unzip.html).
 
 How to build
 ------------
@@ -61,6 +61,12 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 
 Changelog
 ---------
+
+**2015-12-03**
+
+ * version 1.0.1
+ * deplibs cache support
+ * headers cleanup
 
 **2015-11-01**
 

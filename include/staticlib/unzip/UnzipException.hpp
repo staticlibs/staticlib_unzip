@@ -21,10 +21,10 @@
  * Created on October 8, 2015, 9:10 PM
  */
 
-#ifndef STATICLIb_UNZIP_UNZIPEXCEPTION_HPP
-#define	STATICLIb_UNZIP_UNZIPEXCEPTION_HPP
+#ifndef STATICLIB_UNZIP_UNZIPEXCEPTION_HPP
+#define	STATICLIB_UNZIP_UNZIPEXCEPTION_HPP
 
-#include "staticlib/utils/BaseException.hpp"
+#include "staticlib/config/BaseException.hpp"
 
 namespace staticlib {
 namespace unzip {
@@ -32,7 +32,7 @@ namespace unzip {
 /**
  * Module specific exception
  */
-class UnzipException : public staticlib::utils::BaseException {
+class UnzipException : public staticlib::config::BaseException {
 public:
     /**
      * Default constructor
@@ -45,12 +45,12 @@ public:
      * @param msg error message
      */
     UnzipException(const std::string& msg) :
-    staticlib::utils::BaseException(msg) { }        
+    staticlib::config::BaseException(msg) { }        
 
 };
 
 } //namespace
 }
 
-#endif	/* STATICLIb_UNZIP_UNZIPEXCEPTION_HPP */
+#endif	/* STATICLIB_UNZIP_UNZIPEXCEPTION_HPP */
 

@@ -16,7 +16,7 @@ cmake_minimum_required ( VERSION 2.8.12 )
 
 # project
 project ( staticlib_unzip CXX )
-set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.0.0 )
+set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.0.1 )
 set ( ${PROJECT_NAME}_DESCRIPTION "Staticlib unZIP library" )
 set ( ${PROJECT_NAME}_URL https://github.com/staticlibs/staticlib_unzip )
 include ( ${CMAKE_CURRENT_LIST_DIR}/resources/macros.cmake )
@@ -28,11 +28,24 @@ if ( ${PROJECT_NAME}_ENABLE_DOCS )
     return ( )
 endif ( )
 
+# check deplibs cache
+if ( STATICLIB_USE_DEPLIBS_CACHE )
+    set ( ${PROJECT_NAME}_CACHED_LIB_PATH ${STATICLIB_DEPLIBS_CACHE_DIR}/${CMAKE_STATIC_LIBRARY_PREFIX}${PROJECT_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX} )
+    if ( EXISTS ${${PROJECT_NAME}_CACHED_LIB_PATH} )
+        add_library( ${PROJECT_NAME} STATIC IMPORTED GLOBAL )
+        set_target_properties( ${PROJECT_NAME} PROPERTIES IMPORTED_LOCATION ${${PROJECT_NAME}_CACHED_LIB_PATH} )
+        message ( STATUS "Using cached library: [${${PROJECT_NAME}_CACHED_LIB_PATH}]" )
+        return ( )
+    endif ( )
+endif ( )
+
 # dependencies
 set ( ${PROJECT_NAME}_DEPS_PUBLIC
-        staticlib_utils
+        staticlib_config
+        staticlib_endian
+        staticlib_io
         staticlib_pimpl
-        staticlib_io )
+        staticlib_utils )
 set ( ${PROJECT_NAME}_DEPS_PRIVATE
         zlib )
 set ( ${PROJECT_NAME}_DEPS ${${PROJECT_NAME}_DEPS_PUBLIC} ${${PROJECT_NAME}_DEPS_PRIVATE} )

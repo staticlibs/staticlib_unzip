@@ -5,10 +5,9 @@
  * Created on October 8, 2015, 8:03 PM
  */
 
-#include <string>
+#include "staticlib/unzip/UnzipFileIndex.hpp"
+
 #include <unordered_map>
-#include <utility>
-#include <cstdint>
 #include <cstdlib>
 #include <cstring>
 
@@ -17,21 +16,24 @@
 
 #include "zlib.h"
 
+#include "staticlib/config.hpp"
+#include "staticlib/endian.hpp"
 #include "staticlib/io.hpp"
 #include "staticlib/utils.hpp"
-#include "staticlib/pimpl.hpp"
 #include "staticlib/pimpl/pimpl_forward_macros.hpp"
 
 #include "staticlib/unzip/UnzipException.hpp"
-#include "staticlib/unzip/UnzipFileIndex.hpp"
+
 
 namespace staticlib {
 namespace unzip {
 
 namespace { // anonymous
 
-namespace su = staticlib::utils;
+namespace sc = staticlib::config;
+namespace en = staticlib::endian;
 namespace io = staticlib::io;
+namespace su = staticlib::utils;
 
 const uint32_t ZIP_CD_START_SIGNATURE = 0x02014b50;
 
@@ -111,9 +113,9 @@ private:
         }
         if (-1 == eocd) throw UnzipException(TRACEMSG(std::string{} +
                 "Cannot find Central Directory in an alleged zip file: [" + zip_file_path + "],"
-                " searching through: [" + su::to_string(buf_size) + "] bytes on the end of the file"));
+                " searching through: [" + sc::to_string(buf_size) + "] bytes on the end of the file"));
         if (eocd > buf_size - 22) throw UnzipException(TRACEMSG(std::string{} +
-                "Invalid EOCD position (from end): [" + su::to_string(buf_size - eocd) + "],"
+                "Invalid EOCD position (from end): [" + sc::to_string(buf_size - eocd) + "],"
                 " in an alleged zip file: [" + zip_file_path + "]"));
         uint32_t offset; 
         ::memcpy(std::addressof(offset), buf + eocd + 16, 4);
@@ -125,24 +127,24 @@ private:
     }
   
     NamedFileEntry read_next_entry(io::buffered_source<su::FileDescriptor>& src) {
-        uint32_t sig = io::read_32_le<uint32_t>(src);
+        uint32_t sig = en::read_32_le<uint32_t>(src);
         if (ZIP_CD_START_SIGNATURE != sig) {
             throw UnzipException(TRACEMSG(std::string{} +
                     "Cannot find Central Directory file header in an alleged zip file: [" + zip_file_path + "]," +
-                    " invalid signature: [" + su::to_string(sig) + "]," +
-                    " must be: [" + su::to_string(ZIP_CD_START_SIGNATURE) + "]"));
+                    " invalid signature: [" + sc::to_string(sig) + "]," +
+                    " must be: [" + sc::to_string(ZIP_CD_START_SIGNATURE) + "]"));
         }
         std::array<char, 32> skip;
         io::skip(src, skip.data(), skip.size(), 6);
-        uint16_t comp_method = io::read_16_le<uint16_t>(src);
+        uint16_t comp_method = en::read_16_le<uint16_t>(src);
         io::skip(src, skip.data(), skip.size(), 8);
-        int32_t comp_length = io::read_32_le<int32_t>(src);
-        int32_t uncomp_length = io::read_32_le<int32_t>(src);
-        uint16_t namelen = io::read_16_le<uint16_t>(src);
-        uint16_t extralen = io::read_16_le<uint16_t>(src);
-        uint16_t commentlen = io::read_16_le<uint16_t>(src);
+        int32_t comp_length = en::read_32_le<int32_t>(src);
+        int32_t uncomp_length = en::read_32_le<int32_t>(src);
+        uint16_t namelen = en::read_16_le<uint16_t>(src);
+        uint16_t extralen = en::read_16_le<uint16_t>(src);
+        uint16_t commentlen = en::read_16_le<uint16_t>(src);
         io::skip(src, skip.data(), skip.size(), 8);
-        uint32_t offset = io::read_32_le<uint32_t>(src);
+        uint32_t offset = en::read_32_le<uint32_t>(src);
         std::string filename{};
         filename.resize(namelen);
         io::read_exact(src, std::addressof(filename.front()), namelen);

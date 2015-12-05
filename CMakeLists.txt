@@ -16,7 +16,7 @@ cmake_minimum_required ( VERSION 2.8.12 )
 
 # project
 project ( staticlib_unzip CXX )
-set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.0.1 )
+set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.0.2 )
 set ( ${PROJECT_NAME}_DESCRIPTION "Staticlib unZIP library" )
 set ( ${PROJECT_NAME}_URL https://github.com/staticlibs/staticlib_unzip )
 include ( ${CMAKE_CURRENT_LIST_DIR}/resources/macros.cmake )
@@ -40,12 +40,17 @@ if ( STATICLIB_USE_DEPLIBS_CACHE )
 endif ( )
 
 # dependencies
+set ( ${PROJECT_NAME}_OPTIONS "" )
 set ( ${PROJECT_NAME}_DEPS_PUBLIC
         staticlib_config
         staticlib_endian
         staticlib_io
         staticlib_pimpl
         staticlib_utils )
+if ( STATICLIB_WITH_ICU )
+    set ( ${PROJECT_NAME}_DEPS ${${PROJECT_NAME}_DEPS_PUBLIC} icu-uc )
+    set ( ${PROJECT_NAME}_OPTIONS -DSTATICLIB_WITH_ICU )
+endif ( )
 set ( ${PROJECT_NAME}_DEPS_PRIVATE
         zlib )
 set ( ${PROJECT_NAME}_DEPS ${${PROJECT_NAME}_DEPS_PUBLIC} ${${PROJECT_NAME}_DEPS_PRIVATE} )
@@ -61,7 +66,7 @@ set ( ${PROJECT_NAME}_INCLUDES ${CMAKE_CURRENT_LIST_DIR}/include )
 target_include_directories ( ${PROJECT_NAME} BEFORE PRIVATE
         ${${PROJECT_NAME}_INCLUDES}         
         ${${PROJECT_NAME}_DEPS_PC_INCLUDE_DIRS} )
-target_compile_options ( ${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_DEPS_PC_CFLAGS_OTHER} )
+target_compile_options ( ${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_OPTIONS} ${${PROJECT_NAME}_DEPS_PC_CFLAGS_OTHER} )
 if ( TARGET external_zlib )
     add_dependencies ( ${PROJECT_NAME} external_zlib )
 endif ( )
@@ -70,7 +75,9 @@ endif ( )
 if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
     set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
 endif ( )
-staticlib_unzip_list_to_string ( ${PROJECT_NAME}_PC_CFLAGS "-I" ${PROJECT_NAME}_INCLUDES )
+staticlib_unzip_list_to_string ( ${PROJECT_NAME}_PC_CFLAGS_INCLUDES "-I" ${PROJECT_NAME}_INCLUDES )
+staticlib_unzip_list_to_string ( ${PROJECT_NAME}_PC_CFLAGS_OPTS "" ${PROJECT_NAME}_OPTIONS )
+set ( ${PROJECT_NAME}_PC_CFLAGS "${${PROJECT_NAME}_PC_CFLAGS_INCLUDES} ${${PROJECT_NAME}_PC_CFLAGS_OPTS}" )
 set ( ${PROJECT_NAME}_PC_LIBS "-L${CMAKE_LIBRARY_OUTPUT_DIRECTORY} -l${PROJECT_NAME}" )
 staticlib_unzip_list_to_string ( ${PROJECT_NAME}_PC_REQUIRES "" ${PROJECT_NAME}_DEPS_PUBLIC )
 staticlib_unzip_list_to_string ( ${PROJECT_NAME}_PC_REQUIRES_PRIVATE "" ${PROJECT_NAME}_DEPS_PRIVATE )

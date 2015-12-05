@@ -37,6 +37,15 @@ namespace su = staticlib::utils;
 
 const uint32_t ZIP_CD_START_SIGNATURE = 0x02014b50;
 
+#ifdef STATICLIB_WITH_ICU
+std::string to_utf8(const icu::UnicodeString& str) {
+    std::string bytes;
+    icu::StringByteSink<std::string> sbs(&bytes);
+    str.toUTF8(sbs);
+    return bytes;
+}
+#endif
+
 struct CentralDirectory {
     uint32_t offset;
     uint16_t records_count;
@@ -67,13 +76,24 @@ struct NamedFileEntry {
 
 class UnzipFileIndex::Impl : public staticlib::pimpl::PimplObject::Impl {
     std::string zip_file_path;
+#ifdef STATICLIB_WITH_ICU
+    icu::UnicodeString zip_file_upath;
+#endif // STATICLIB_WITH_ICU
     std::unordered_map<std::string, FileEntry> en_map{};
     
 public:
+    ~Impl() STATICLIB_NOEXCEPT { };
+    
+#ifdef STATICLIB_WITH_ICU
+    Impl(icu::UnicodeString zip_file_upath) :
+    zip_file_path(to_utf8(zip_file_upath)),
+    zip_file_upath(std::move(zip_file_upath)) {
+        io::buffered_source<su::FileDescriptor> src{su::FileDescriptor{this->zip_file_upath, 'r'}};
+#else    
     Impl(std::string zip_file_path) :
     zip_file_path(std::move(zip_file_path)) {
-        // creating buffered source early to reuse buffer
         io::buffered_source<su::FileDescriptor> src{su::FileDescriptor{this->zip_file_path, 'r'}};
+#endif // STATICLIB_WITH_ICU        
         size_t cd_buf_len = std::min(static_cast<size_t>(src.get_source().size()), src.get_buffer().size());
         CentralDirectory cd = find_cd(src.get_source(), src.get_buffer().data(), cd_buf_len);
         src.get_source().seek(cd.offset);
@@ -87,8 +107,13 @@ public:
             }
         }
     }
-    
+
+#ifdef STATICLIB_WITH_ICU
+    FileEntry find_zip_entry(const UnzipFileIndex&, const icu::UnicodeString& uname) const {
+        std::string name = to_utf8(uname);
+#else    
     FileEntry find_zip_entry(const UnzipFileIndex&, const std::string& name) const {
+#endif // STATICLIB_WITH_ICU        
         auto res = en_map.find(name);
         if(res != en_map.end()) {
             return res->second;
@@ -100,6 +125,12 @@ public:
     const std::string& get_zip_file_path(const UnzipFileIndex&) const {
         return zip_file_path;
     }
+    
+#ifdef STATICLIB_WITH_ICU
+    const icu::UnicodeString& get_zip_file_upath(const UnzipFileIndex&) const {
+        return zip_file_upath;
+    }
+#endif // STATICLIB_WITH_ICU            
     
 private:    
     CentralDirectory find_cd(su::FileDescriptor& fd, char* buf, std::streamsize buf_size) {
@@ -153,9 +184,16 @@ private:
         return NamedFileEntry(std::move(filename), 46 + namelen + extralen + commentlen, offset, comp_length, uncomp_length, comp_method);
     }
 };
+#ifdef STATICLIB_WITH_ICU
+PIMPL_FORWARD_CONSTRUCTOR(UnzipFileIndex, (icu::UnicodeString), (), UnzipException)
+PIMPL_FORWARD_METHOD(UnzipFileIndex, FileEntry, find_zip_entry, (const icu::UnicodeString&), (const), UnzipException)
+PIMPL_FORWARD_METHOD(UnzipFileIndex, const std::string&, get_zip_file_path, (), (const), UnzipException)
+PIMPL_FORWARD_METHOD(UnzipFileIndex, const icu::UnicodeString&, get_zip_file_upath, (), (const), UnzipException)
+#else
 PIMPL_FORWARD_CONSTRUCTOR(UnzipFileIndex, (std::string), (), UnzipException)
 PIMPL_FORWARD_METHOD(UnzipFileIndex, FileEntry, find_zip_entry, (const std::string&), (const), UnzipException)
-PIMPL_FORWARD_METHOD(UnzipFileIndex, const std::string&, get_zip_file_path, (), (const), UnzipException)        
+PIMPL_FORWARD_METHOD(UnzipFileIndex, const std::string&, get_zip_file_path, (), (const), UnzipException)
+#endif // STATICLIB_WITH_ICU
 
 } // namespace
 }

@@ -62,6 +62,11 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 Changelog
 ---------
 
+**2015-12-04**
+
+ * version 1.0.2
+ * optional ICU support
+
 **2015-12-03**
 
  * version 1.0.1

@@ -21,13 +21,16 @@
  * Created on October 12, 2015, 10:01 AM
  */
 
+
+#include "staticlib/unzip.hpp"
+
 #include <iostream>
 #include <string>
 #include <sstream>
 #include <array>
-#include <cassert>
 
-#include "staticlib/unzip.hpp"
+#include "staticlib/config/assert.hpp"
+
 #include "staticlib/io.hpp"
 
 namespace uz = staticlib::unzip;
@@ -42,7 +45,7 @@ void test_read_inflate() {
     std::array<char, 8192> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
     // std::cout << "[" << out.str() << "]" << std::endl;
-    assert("bbbbbbbb\n" == out.str());
+    slassert("bbbbbbbb\n" == out.str());
 }
 
 void test_read_store() {
@@ -54,14 +57,16 @@ void test_read_store() {
     std::array<char, 8192> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
     // std::cout << "[" << out.str() << "]" << std::endl;
-    assert("aaa\n" == out.str());
+    slassert("aaa\n" == out.str());
 }
-
 
 int main() {
-    test_read_inflate();
-    test_read_store();
-
+    try {
+        test_read_inflate();
+        test_read_store();
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
     return 0;
 }
-

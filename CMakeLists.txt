@@ -16,7 +16,7 @@ cmake_minimum_required ( VERSION 2.8.12 )
 
 # project
 project ( staticlib_unzip CXX )
-set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.0.3 )
+set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.0.4 )
 set ( ${PROJECT_NAME}_DESCRIPTION "Staticlib unZIP library" )
 set ( ${PROJECT_NAME}_URL https://github.com/staticlibs/staticlib_unzip )
 include ( ${CMAKE_CURRENT_LIST_DIR}/resources/macros.cmake )
@@ -37,6 +37,24 @@ if ( STATICLIB_USE_DEPLIBS_CACHE )
         message ( STATUS "Using cached library: [${${PROJECT_NAME}_CACHED_LIB_PATH}]" )
         return ( )
     endif ( )
+endif ( )
+
+# standalone build
+if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
+    set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} )
+endif ( )
+if ( NOT DEFINED STATICLIB_TOOLCHAIN )
+    if ( NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" ) 
+        staticlib_serialization_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../external_zlib )
+        if ( STATICLIB_WITH_ICU )
+            staticlib_serialization_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../external_icu )
+        endif ( )
+    endif (  )
+    staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_config )
+    staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_io )
+    staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_endian )
+    staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_pimpl )
+    staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_utils )
 endif ( )
 
 # dependencies
@@ -72,9 +90,6 @@ if ( TARGET external_zlib )
 endif ( )
 
 # pkg-config
-if ( NOT DEFINED CMAKE_LIBRARY_OUTPUT_DIRECTORY )
-    set ( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} )
-endif ( )
 staticlib_unzip_list_to_string ( ${PROJECT_NAME}_PC_CFLAGS_INCLUDES "-I" ${PROJECT_NAME}_INCLUDES )
 staticlib_unzip_list_to_string ( ${PROJECT_NAME}_PC_CFLAGS_OPTS "" ${PROJECT_NAME}_OPTIONS )
 set ( ${PROJECT_NAME}_PC_CFLAGS "${${PROJECT_NAME}_PC_CFLAGS_INCLUDES} ${${PROJECT_NAME}_PC_CFLAGS_OPTS}" )

@@ -21,37 +21,40 @@
  * Created on October 12, 2015, 5:58 AM
  */
 
-#include <iostream>
-#include <cassert>
-
 #include "staticlib/unzip/UnzipFileIndex.hpp"
+
+#include <iostream>
+
+#include "staticlib/config/assert.hpp"
+
 
 namespace uz = staticlib::unzip;
 
 void test_entries() {
     uz::UnzipFileIndex idx{"../test/bundle.zip"};
     auto desc_aaa = idx.find_zip_entry("bundle/aaa.txt");
-    assert(144 == desc_aaa.offset);
-    assert(4 == desc_aaa.comp_length);
-    assert(4 == desc_aaa.uncomp_length);
-    assert(0 == desc_aaa.comp_method);
+    slassert(144 == desc_aaa.offset);
+    slassert(4 == desc_aaa.comp_length);
+    slassert(4 == desc_aaa.uncomp_length);
+    slassert(0 == desc_aaa.comp_method);
     auto desc_bbbb = idx.find_zip_entry("bundle/bbbb.txt");
-    (void) desc_bbbb;
-    assert(65 == desc_bbbb.offset);
-    assert(6 == desc_bbbb.comp_length);
-    assert(9 == desc_bbbb.uncomp_length);
-    assert(8 == desc_bbbb.comp_method);
+    slassert(65 == desc_bbbb.offset);
+    slassert(6 == desc_bbbb.comp_length);
+    slassert(9 == desc_bbbb.uncomp_length);
+    slassert(8 == desc_bbbb.comp_method);
     auto desc_fail = idx.find_zip_entry("bundle/fail.txt");
-    (void) desc_fail;
-    assert(-1 == desc_fail.offset);
-    assert(-1 == desc_fail.comp_length);
-    assert(-1 == desc_fail.uncomp_length);
-    assert(0 == desc_fail.comp_method);    
+    slassert(-1 == desc_fail.offset);
+    slassert(-1 == desc_fail.comp_length);
+    slassert(-1 == desc_fail.uncomp_length);
+    slassert(0 == desc_fail.comp_method);    
 }
 
 int main() {
-    test_entries();
-
+    try {
+        test_entries();
+    } catch (const std::exception& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
+    }
     return 0;
 }
-

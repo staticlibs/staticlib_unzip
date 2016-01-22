@@ -16,29 +16,16 @@ How to build
 For Windows users ready-to-use binary version of `pkg-config` can be obtained from [tools_windows_pkgconfig](https://github.com/staticlibs/tools_windows_pkgconfig) repository.
 See [PkgConfig](https://github.com/staticlibs/wiki/wiki/PkgConfig) for Staticlibs-specific details about `pkg-config` usage.
 
-This project depends on a [zlib](https://github.com/madler/zlib) and on a number of Staticlib libraries.
-
-See [StaticlibsDependencies](https://github.com/staticlibs/wiki/wiki/StaticlibsDependencies) for more 
-details about dependency management with Staticlibs.
-
-To build this project manually:
-
- * checkout all the dependent projects
- * configure these projects using the same output directory:
-
-Run:
-
-    mkdir build
-    cd build
-    cmake .. -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=<my_lib_dir>
-
- * build all the dependent projects
- * configure this projects using the same output directory and build it:
-
 To build the library on Windows using Visual Studio 2013 Express run the following commands using
 Visual Studio development command prompt 
 (`C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\Tools\Shortcuts\VS2013 x86 Native Tools Command Prompt`):
 
+    git clone --recursive https://github.com/staticlibs/external_zlib.git
+    git clone https://github.com/staticlibs/staticlib_config.git
+    git clone https://github.com/staticlibs/staticlib_io.git
+    git clone https://github.com/staticlibs/staticlib_endian.git
+    git clone https://github.com/staticlibs/staticlib_pimpl.git
+    git clone https://github.com/staticlibs/staticlib_utils.git
     git clone https://github.com/staticlibs/staticlib_unzip.git
     cd staticlib_unzip
     mkdir build
@@ -51,6 +38,9 @@ To build on other platforms using GCC or Clang with GNU Make:
     cmake .. -DCMAKE_CXX_FLAGS="--std=c++11"
     make
 
+Cloning of [external_zlib](https://github.com/staticlibs/external_jansson.git) is not required on Linux - 
+system Zlib library will be used instead.
+
 See [StaticlibsToolchains](https://github.com/staticlibs/wiki/wiki/StaticlibsToolchains) for 
 more information about the toolchain setup and cross-compilation.
 
@@ -61,6 +51,11 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 
 Changelog
 ---------
+
+**2016-01-22**
+
+ * version 1.0.4
+ * minor CMake changes
 
 **2015-12-19**
 

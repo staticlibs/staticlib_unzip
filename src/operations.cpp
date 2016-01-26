@@ -161,9 +161,9 @@ private:
         }
         // prepare zlib stream
         stream.next_in = reinterpret_cast<unsigned char*> (buf.data() + pos);
-        stream.avail_in = avail;
+        stream.avail_in = static_cast<uInt>(avail);
         stream.next_out = reinterpret_cast<unsigned char*> (buffer);
-        stream.avail_out = len_out;
+        stream.avail_out = static_cast<uInt>(len_out);
         // call inflate
         auto err = ::inflate(std::addressof(stream), Z_FINISH);
         if (Z_OK == err || Z_STREAM_END == err || Z_BUF_ERROR == err) {

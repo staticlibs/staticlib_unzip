@@ -27,7 +27,7 @@ include ( ${STATICLIB_CMAKE}/staticlibs_common.cmake )
 staticlib_enable_deplibs_cache ( )
 
 # dependencies
-set ( STATICLIB_WITH_ICU OFF CACHE BOOL "" )
+set ( STATICLIB_WITH_ICU ON CACHE BOOL "" )
 if ( NOT DEFINED STATICLIB_DEPS )
     set ( STATICLIB_DEPS ${CMAKE_CURRENT_LIST_DIR}/../../ CACHE INTERNAL "" )    
 endif ( )

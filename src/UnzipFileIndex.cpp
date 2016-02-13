@@ -24,6 +24,7 @@
 #include "staticlib/unzip/UnzipFileIndex.hpp"
 
 #include <unordered_map>
+#include <vector>
 #include <cstdlib>
 #include <cstring>
 
@@ -96,6 +97,7 @@ class UnzipFileIndex::Impl : public staticlib::pimpl::PimplObject::Impl {
     icu::UnicodeString zip_file_upath;
 #endif // STATICLIB_WITH_ICU
     std::unordered_map<std::string, FileEntry> en_map{};
+    std::vector<std::string> en_list{};
     
 public:
     ~Impl() STATICLIB_NOEXCEPT { };
@@ -117,6 +119,7 @@ public:
         for (int i = 0; i < cd.records_count; i++) {
             auto en = read_next_entry(src);
             if (en.is_file()) {
+                en_list.push_back(en.name);
                 auto res = en_map.emplace(std::move(en.name), en.entry); // value
                 if (!res.second) throw UnzipException(TRACEMSG(std::string{} +
                         "Invalid Duplicate entry: [" + (res.first)->first + "] in a zip file: [" + this->zip_file_path + "]"));
@@ -146,7 +149,11 @@ public:
     const icu::UnicodeString& get_zip_file_upath(const UnzipFileIndex&) const {
         return zip_file_upath;
     }
-#endif // STATICLIB_WITH_ICU            
+#endif // STATICLIB_WITH_ICU     
+    
+    const std::vector<std::string>& get_entries(const UnzipFileIndex&) const {
+        return en_list;
+    }
     
 private:    
     CentralDirectory find_cd(su::FileDescriptor& fd, char* buf, std::streamsize buf_size) {
@@ -210,6 +217,7 @@ PIMPL_FORWARD_CONSTRUCTOR(UnzipFileIndex, (std::string), (), UnzipException)
 PIMPL_FORWARD_METHOD(UnzipFileIndex, FileEntry, find_zip_entry, (const std::string&), (const), UnzipException)
 PIMPL_FORWARD_METHOD(UnzipFileIndex, const std::string&, get_zip_file_path, (), (const), UnzipException)
 #endif // STATICLIB_WITH_ICU
+PIMPL_FORWARD_METHOD(UnzipFileIndex, const std::vector<std::string>&, get_entries, (), (const), UnzipException)
 
 } // namespace
 }

@@ -31,7 +31,7 @@
 namespace uz = staticlib::unzip;
 
 void test_entries() {
-    uz::UnzipFileIndex idx{"../test/bundle.zip"};
+    uz::UnzipFileIndex idx{"../test/data/bundle.zip"};
     auto desc_aaa = idx.find_zip_entry("bundle/aaa.txt");
     slassert(144 == desc_aaa.offset);
     slassert(4 == desc_aaa.comp_length);

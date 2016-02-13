@@ -26,6 +26,7 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 #include <cstdint>
 
 #ifdef STATICLIB_WITH_ICU
@@ -143,6 +144,13 @@ public:
      */
     const icu::UnicodeString& get_zip_file_upath() const;
 #endif    
+    
+    /**
+     * Returns a list of ZIP entries names
+     * 
+     * @return list of ZIP entries names
+     */
+    const std::vector<std::string>& get_entries() const;
 };
 
 } // namespace

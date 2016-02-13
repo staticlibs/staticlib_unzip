@@ -37,33 +37,49 @@ namespace uz = staticlib::unzip;
 namespace io = staticlib::io;
 
 void test_read_inflate() {
-    uz::UnzipFileIndex idx{"../test/bundle.zip"};
+    uz::UnzipFileIndex idx{"../test/data/bundle.zip"};
     std::ostringstream out{};
     io::streambuf_sink sink{out.rdbuf()};
     auto ptr = uz::open_zip_entry(idx, "bundle/bbbb.txt");
     io::streambuf_source src{ptr.get()};
-    std::array<char, 8192> buf{{}};
+    std::array<char, 4096> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
     // std::cout << "[" << out.str() << "]" << std::endl;
     slassert("bbbbbbbb\n" == out.str());
 }
 
 void test_read_store() {
-    uz::UnzipFileIndex idx{"../test/bundle.zip"};
+    uz::UnzipFileIndex idx{"../test/data/bundle.zip"};
     std::ostringstream out{};
     io::streambuf_sink sink{out.rdbuf()};
     auto ptr = uz::open_zip_entry(idx, "bundle/aaa.txt");
     io::streambuf_source src{ptr.get()};
-    std::array<char, 8192> buf{{}};
+    std::array<char, 4096> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
     // std::cout << "[" << out.str() << "]" << std::endl;
     slassert("aaa\n" == out.str());
+}
+
+void test_read_manual() {
+    uz::UnzipFileIndex idx{"../test/data/test.zip"};
+    slassert(2 == idx.get_entries().size());
+    slassert("foo.txt" == idx.get_entries()[0]);
+    slassert("bar/baz.txt" == idx.get_entries()[1]);
+    std::ostringstream out{};
+    io::streambuf_sink sink{out.rdbuf()};
+    auto ptr = uz::open_zip_entry(idx, "bar/baz.txt");
+    io::streambuf_source src{ptr.get()};
+    std::array<char, 4096> buf{{}};
+    io::copy_all(src, sink, buf.data(), buf.size());
+//    std::cout << "[" << out.str() << "]" << std::endl;
+    slassert("bye" == out.str());
 }
 
 int main() {
     try {
         test_read_inflate();
         test_read_store();
+        test_read_manual();
     } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
         return 1;

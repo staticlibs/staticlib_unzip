@@ -191,24 +191,24 @@ private:
 } // namespace
 
 #ifdef STATICLIB_WITH_ICU
-std::unique_ptr<std::streambuf> open_zip_entry(const UnzipFileIndex& idx, const icu::UnicodeString& entry_uname) {
+std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const icu::UnicodeString& entry_uname) {
     std::string entry_name = to_utf8(entry_uname);
     auto desc = idx.find_zip_entry(entry_uname);
 #else
-std::unique_ptr<std::streambuf> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name) {
+std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name) {
     auto desc = idx.find_zip_entry(entry_name);
 #endif // STATICLIB_WITH_ICU   
     if (-1 == desc.offset) throw UnzipException(TRACEMSG(std::string{} + 
             "Specified zip entry not found: [" + entry_name + "]"));
     try {
-        return std::unique_ptr<std::streambuf>{
-            new io::unbuffered_istreambuf<io::unique_source<UnzipEntrySource>>{
-                io::make_unique_source(
+        
 #ifdef STATICLIB_WITH_ICU
-                    new UnzipEntrySource{idx.get_zip_file_upath(), entry_uname, desc})}};
+        auto src_ptr = new UnzipEntrySource{idx.get_zip_file_upath(), entry_uname, desc};
 #else                
-                    new UnzipEntrySource{idx.get_zip_file_path(), entry_name, desc})}};
+        auto src_ptr = new UnzipEntrySource{idx.get_zip_file_path(), entry_name, desc};
 #endif // STATICLIB_WITH_ICU
+        auto usrc = io::make_unique_source(src_ptr);
+        return io::make_source_istream_ptr(std::move(usrc));
     } catch (const std::exception& e) {
         throw UnzipException(TRACEMSG(std::string{} + 
                 "Error opening zip entry: [" + entry_name + "]" +

@@ -41,7 +41,7 @@ void test_read_inflate() {
     std::ostringstream out{};
     io::streambuf_sink sink{out.rdbuf()};
     auto ptr = uz::open_zip_entry(idx, "bundle/bbbb.txt");
-    io::streambuf_source src{ptr.get()};
+    io::streambuf_source src{ptr->rdbuf()};
     std::array<char, 4096> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
     // std::cout << "[" << out.str() << "]" << std::endl;
@@ -53,7 +53,7 @@ void test_read_store() {
     std::ostringstream out{};
     io::streambuf_sink sink{out.rdbuf()};
     auto ptr = uz::open_zip_entry(idx, "bundle/aaa.txt");
-    io::streambuf_source src{ptr.get()};
+    io::streambuf_source src{ptr->rdbuf()};
     std::array<char, 4096> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
     // std::cout << "[" << out.str() << "]" << std::endl;
@@ -68,7 +68,7 @@ void test_read_manual() {
     std::ostringstream out{};
     io::streambuf_sink sink{out.rdbuf()};
     auto ptr = uz::open_zip_entry(idx, "bar/baz.txt");
-    io::streambuf_source src{ptr.get()};
+    io::streambuf_source src{ptr->rdbuf()};
     std::array<char, 4096> buf{{}};
     io::copy_all(src, sink, buf.data(), buf.size());
 //    std::cout << "[" << out.str() << "]" << std::endl;

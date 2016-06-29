@@ -29,10 +29,6 @@
 #include <vector>
 #include <cstdint>
 
-#ifdef STATICLIB_WITH_ICU
-#include <unicode/unistr.h>
-#endif // STATICLIB_WITH_ICU
-
 #include "staticlib/pimpl.hpp"
 
 
@@ -111,11 +107,7 @@ public:
      * 
      * @param zip_file_path path to the ZIP file
      */
-#ifdef STATICLIB_WITH_ICU
-    UnzipFileIndex(icu::UnicodeString zip_file_path);
-#else
     UnzipFileIndex(std::string zip_file_path);
-#endif // STATICLIB_WITH_ICU
     
     /**
      * Returns the ZIP entry with the specified name
@@ -123,11 +115,7 @@ public:
      * @param name name of ZIP entry
      * @return ZIP entry with the specified name, empty entry if not found
      */
-#ifdef STATICLIB_WITH_ICU
-    FileEntry find_zip_entry(const icu::UnicodeString& name) const;
-#else
     FileEntry find_zip_entry(const std::string& name) const;
-#endif // STATICLIB_WITH_ICU
     
     /**
      * Returns a path to the ZIP file
@@ -135,15 +123,6 @@ public:
      * @return a path to the ZIP file
      */
     const std::string& get_zip_file_path() const;
-    
-#ifdef STATICLIB_WITH_ICU
-    /**
-     * Returns a unicode path to the ZIP file
-     * 
-     * @return a unicode path to the ZIP file
-     */
-    const icu::UnicodeString& get_zip_file_upath() const;
-#endif    
     
     /**
      * Returns a list of ZIP entries names

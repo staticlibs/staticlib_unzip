@@ -28,10 +28,6 @@
 #include <istream>
 #include <string>
 
-#ifdef STATICLIB_WITH_ICU
-#include <unicode/unistr.h>
-#endif // STATICLIB_WITH_ICU
-
 #include "staticlib/unzip/UnzipFileIndex.hpp"
 
 namespace staticlib {
@@ -45,11 +41,7 @@ namespace unzip {
  * @param entry_name ZIP entry name
  * @return unique pointer to the unbuffered istream
  */
-#ifdef STATICLIB_WITH_ICU
-std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const icu::UnicodeString& entry_name);
-#else
 std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name);
-#endif // STATICLIB_WITH_ICU
 
 } // namespace
 }

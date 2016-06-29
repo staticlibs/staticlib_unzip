@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">staticlib_unzip
-   &#160;<span id="projectnumber">1.0.1</span>
+   &#160;<span id="projectnumber">1.0.5</span>
    </div>
   </td>
  </tr>
@@ -104,16 +104,16 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ae1a70801f747a2eb9c21698ecc987a12"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; std::streambuf &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestaticlib_1_1unzip.html#ae1a70801f747a2eb9c21698ecc987a12">open_zip_entry</a> (const <a class="el" href="classstaticlib_1_1unzip_1_1UnzipFileIndex.html">UnzipFileIndex</a> &amp;idx, const std::string &amp;entry_name)</td></tr>
-<tr class="memdesc:ae1a70801f747a2eb9c21698ecc987a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens "input stream" to the specified ZIP entry in the ZIP file corresponding to the specified index.  <a href="#ae1a70801f747a2eb9c21698ecc987a12"></a><br/></td></tr>
+<tr class="memitem:a205935f29e20d3cc3a12af2911b6ee7a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; std::istream &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestaticlib_1_1unzip.html#a205935f29e20d3cc3a12af2911b6ee7a">open_zip_entry</a> (const <a class="el" href="classstaticlib_1_1unzip_1_1UnzipFileIndex.html">UnzipFileIndex</a> &amp;idx, const std::string &amp;entry_name)</td></tr>
+<tr class="memdesc:a205935f29e20d3cc3a12af2911b6ee7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens "input stream" to the specified ZIP entry in the ZIP file corresponding to the specified index.  <a href="#a205935f29e20d3cc3a12af2911b6ee7a"></a><br/></td></tr>
 </table>
 <h2>Function Documentation</h2>
-<a class="anchor" id="ae1a70801f747a2eb9c21698ecc987a12"></a>
+<a class="anchor" id="a205935f29e20d3cc3a12af2911b6ee7a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::unique_ptr&lt;std::streambuf&gt; staticlib::unzip::open_zip_entry </td>
+          <td class="memname">std::unique_ptr&lt;std::istream&gt; staticlib::unzip::open_zip_entry </td>
           <td>(</td>
           <td class="paramtype">const UnzipFileIndex &amp;&#160;</td>
           <td class="paramname"><em>idx</em>, </td>
@@ -140,14 +140,14 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>unique pointer to the unbuffered streambuf </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>unique pointer to the unbuffered istream </dd></dl>
 
 </div>
 </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Dec 4 2015 22:02:55 for staticlib_unzip by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 29 2016 08:49:14 for staticlib_unzip by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

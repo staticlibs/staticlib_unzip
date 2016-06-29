@@ -118,7 +118,7 @@ public:
             switch (entry.comp_method) {
             case ZLIB_METHOD_STORE: return read_store(buffer, len_out);
             case ZLIB_METHOD_INFLATE: return read_inflate(buffer, len_out);
-            default: throw UnzipException(TRACEMSG(std::string{} +
+            default: throw UnzipException(TRACEMSG(
                     "Unsupported compression method: [" + sc::to_string(entry.comp_method) + "],"
                     " in entry: [" + zip_entry_name + "],"
                     " in ZIP file: [" + zip_file_path + "]"));
@@ -131,7 +131,7 @@ private:
     void check_header() {
         uint32_t sig = en::read_32_le<uint32_t>(fd);
         if (ZIP_CD_START_SIGNATURE != sig) {
-            throw UnzipException(TRACEMSG(std::string{} +
+            throw UnzipException(TRACEMSG(
             "Cannot find local file header an alleged zip file: [" + zip_file_path + "],"
                     " position: [" + sc::to_string(entry.offset) + "]," +
                     " invalid signature: [" + sc::to_string(sig) + "]," +
@@ -147,7 +147,7 @@ private:
     void init_zlib_stream() {
         std::memset(std::addressof(stream), 0, sizeof(stream));
         auto err = inflateInit2(std::addressof(stream), -MAX_WBITS);
-        if (Z_OK != err) throw UnzipException(TRACEMSG(std::string{} + 
+        if (Z_OK != err) throw UnzipException(TRACEMSG(
                 "Error initializing ZIP stream: [" + zError(err) + "], file: [" + zip_file_path + "]"));
     }
     
@@ -177,7 +177,7 @@ private:
                 return written;
             }
             return std::char_traits<char>::eof();
-        } else throw UnzipException(TRACEMSG(std::string{}  +
+        } else throw UnzipException(TRACEMSG(
                 "Inflate error: [" + zError(err) + "], file: [" + zip_file_path + "]"));
     }
     
@@ -198,7 +198,7 @@ std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const ic
 std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name) {
     auto desc = idx.find_zip_entry(entry_name);
 #endif // STATICLIB_WITH_ICU   
-    if (-1 == desc.offset) throw UnzipException(TRACEMSG(std::string{} + 
+    if (-1 == desc.offset) throw UnzipException(TRACEMSG(
             "Specified zip entry not found: [" + entry_name + "]"));
     try {
         
@@ -210,7 +210,7 @@ std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const st
         auto usrc = io::make_unique_source(src_ptr);
         return io::make_source_istream_ptr(std::move(usrc));
     } catch (const std::exception& e) {
-        throw UnzipException(TRACEMSG(std::string{} + 
+        throw UnzipException(TRACEMSG(
                 "Error opening zip entry: [" + entry_name + "]" +
                 " from zip file: [" + idx.get_zip_file_path() + "]" +
                 " with offset: [" + sc::to_string(desc.offset) + "]," +

@@ -102,7 +102,7 @@ public:
             if (en.is_file()) {
                 en_list.push_back(en.name);
                 auto res = en_map.emplace(std::move(en.name), en.entry); // value
-                if (!res.second) throw UnzipException(TRACEMSG(std::string{} +
+                if (!res.second) throw UnzipException(TRACEMSG(
                         "Invalid Duplicate entry: [" + (res.first)->first + "] in a zip file: [" + this->zip_file_path + "]"));
             }
         }
@@ -135,11 +135,11 @@ private:
                 eocd = i - 3;
             }
         }
-        if (-1 == eocd) throw UnzipException(TRACEMSG(std::string{} +
-                "Cannot find Central Directory in an alleged zip file: [" + zip_file_path + "],"
+        if (-1 == eocd) throw UnzipException(TRACEMSG("Cannot find Central Directory" + 
+                " in an alleged zip file: [" + zip_file_path + "],"
                 " searching through: [" + sc::to_string(buf_size) + "] bytes on the end of the file"));
-        if (eocd > buf_size - 22) throw UnzipException(TRACEMSG(std::string{} +
-                "Invalid EOCD position (from end): [" + sc::to_string(buf_size - eocd) + "],"
+        if (eocd > buf_size - 22) throw UnzipException(TRACEMSG("Invalid EOCD position " + 
+                " (from end): [" + sc::to_string(buf_size - eocd) + "],"
                 " in an alleged zip file: [" + zip_file_path + "]"));
         uint32_t offset; 
         ::memcpy(std::addressof(offset), buf + eocd + 16, 4);
@@ -153,8 +153,8 @@ private:
     NamedFileEntry read_next_entry(io::buffered_source<su::FileDescriptor>& src) {
         uint32_t sig = en::read_32_le<uint32_t>(src);
         if (ZIP_CD_START_SIGNATURE != sig) {
-            throw UnzipException(TRACEMSG(std::string{} +
-                    "Cannot find Central Directory file header in an alleged zip file: [" + zip_file_path + "]," +
+            throw UnzipException(TRACEMSG("Cannot find Central Directory file header" + 
+                    " in an alleged zip file: [" + zip_file_path + "]," +
                     " invalid signature: [" + sc::to_string(sig) + "]," +
                     " must be: [" + sc::to_string(ZIP_CD_START_SIGNATURE) + "]"));
         }

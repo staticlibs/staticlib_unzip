@@ -14,7 +14,7 @@ How to build
 
 [pkg-config](http://www.freedesktop.org/wiki/Software/pkg-config/) utility is used for dependency management.
 For Windows users ready-to-use binary version of `pkg-config` can be obtained from [tools_windows_pkgconfig](https://github.com/staticlibs/tools_windows_pkgconfig) repository.
-See [PkgConfig](https://github.com/staticlibs/wiki/wiki/PkgConfig) for Staticlibs-specific details about `pkg-config` usage.
+See [StaticlibsPkgConfig](https://github.com/staticlibs/wiki/wiki/StaticlibsPkgConfig) for Staticlibs-specific details about `pkg-config` usage.
 
 To build the library on Windows using Visual Studio 2013 Express run the following commands using
 Visual Studio development command prompt 
@@ -51,6 +51,11 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 
 Changelog
 ---------
+
+**2016-06-29**
+
+ * version 1.0.5
+ * ICU API removed
 
 **2016-01-22**
 

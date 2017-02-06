@@ -25,7 +25,7 @@
 #define	STATICLIB_UNZIP_OPERATIONS_HPP
 
 #include <memory>
-#include <istream>
+#include <streambuf>
 #include <string>
 
 #include "staticlib/unzip/UnzipFileIndex.hpp"
@@ -39,9 +39,9 @@ namespace unzip {
  * 
  * @param idx ZIP file index
  * @param entry_name ZIP entry name
- * @return unique pointer to the unbuffered istream
+ * @return unique pointer to the unbuffered streambuf
  */
-std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name);
+std::unique_ptr<std::streambuf> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name);
 
 } // namespace
 }

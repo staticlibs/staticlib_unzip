@@ -37,6 +37,7 @@
 #include "staticlib/endian.hpp"
 #include "staticlib/io.hpp"
 #include "staticlib/utils.hpp"
+#include "staticlib/tinydir.hpp"
 #include "staticlib/pimpl/pimpl_forward_macros.hpp"
 
 #include "staticlib/unzip/UnzipException.hpp"
@@ -51,6 +52,7 @@ namespace sc = staticlib::config;
 namespace en = staticlib::endian;
 namespace io = staticlib::io;
 namespace su = staticlib::utils;
+namespace st = staticlib::tinydir;
 
 const uint32_t ZIP_CD_START_SIGNATURE = 0x02014b50;
 
@@ -92,7 +94,7 @@ public:
     
     Impl(std::string zip_file_path) :
     zip_file_path(std::move(zip_file_path)) {
-        io::buffered_source<su::FileDescriptor> src{su::FileDescriptor{this->zip_file_path, 'r'}};
+        auto src = io::make_buffered_source(st::TinydirFileSource(this->zip_file_path));
         size_t cd_buf_len = std::min(static_cast<size_t>(src.get_source().size()), src.get_buffer().size());
         CentralDirectory cd = find_cd(src.get_source(), src.get_buffer().data(), cd_buf_len);
         src.get_source().seek(cd.offset);
@@ -126,9 +128,9 @@ public:
     }
     
 private:    
-    CentralDirectory find_cd(su::FileDescriptor& fd, char* buf, std::streamsize buf_size) {
+    CentralDirectory find_cd(st::TinydirFileSource& fd, char* buf, std::streamsize buf_size) {
         fd.seek(-buf_size, 'e');
-        io::read_exact(fd, buf, buf_size);
+        io::read_exact(fd, {buf, buf_size});
         std::streamsize eocd = -1;
         for (std::streamsize i = buf_size - 1; i >= 3; i--) {
             if (0x06 == buf[i] && 0x05 == buf[i - 1] && 0x4b == buf[i - 2] && 0x50 == buf[i - 3]) {
@@ -150,7 +152,7 @@ private:
         return CentralDirectory(offset, records_count);
     }
   
-    NamedFileEntry read_next_entry(io::buffered_source<su::FileDescriptor>& src) {
+    NamedFileEntry read_next_entry(io::buffered_source<st::TinydirFileSource>& src) {
         uint32_t sig = en::read_32_le<uint32_t>(src);
         if (ZIP_CD_START_SIGNATURE != sig) {
             throw UnzipException(TRACEMSG("Cannot find Central Directory file header" + 
@@ -159,21 +161,21 @@ private:
                     " must be: [" + sc::to_string(ZIP_CD_START_SIGNATURE) + "]"));
         }
         std::array<char, 32> skip;
-        io::skip(src, skip.data(), skip.size(), 6);
+        io::skip(src, skip, 6);
         uint16_t comp_method = en::read_16_le<uint16_t>(src);
-        io::skip(src, skip.data(), skip.size(), 8);
+        io::skip(src, skip, 8);
         int32_t comp_length = en::read_32_le<int32_t>(src);
         int32_t uncomp_length = en::read_32_le<int32_t>(src);
         uint16_t namelen = en::read_16_le<uint16_t>(src);
         uint16_t extralen = en::read_16_le<uint16_t>(src);
         uint16_t commentlen = en::read_16_le<uint16_t>(src);
-        io::skip(src, skip.data(), skip.size(), 8);
+        io::skip(src, skip, 8);
         uint32_t offset = en::read_32_le<uint32_t>(src);
         std::string filename{};
         filename.resize(namelen);
-        io::read_exact(src, std::addressof(filename.front()), namelen);
+        io::read_exact(src, {std::addressof(filename.front()), namelen});
         // skip extra and comment
-        io::skip(src, skip.data(), skip.size(), extralen + commentlen);
+        io::skip(src, skip, extralen + commentlen);
         return NamedFileEntry(std::move(filename), 46 + namelen + extralen + commentlen, offset, comp_length, uncomp_length, comp_method);
     }
 };

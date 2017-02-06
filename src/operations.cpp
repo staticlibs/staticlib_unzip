@@ -39,6 +39,7 @@
 #include "staticlib/endian.hpp"
 #include "staticlib/io.hpp"
 #include "staticlib/utils.hpp"
+#include "staticlib/tinydir.hpp"
 
 #include "staticlib/unzip/UnzipException.hpp"
 
@@ -50,6 +51,7 @@ namespace { // anonymous
 
 namespace sc = staticlib::config;
 namespace su = staticlib::utils;
+namespace st = staticlib::tinydir;
 namespace io = staticlib::io;
 namespace en = staticlib::endian;
 
@@ -73,7 +75,7 @@ class UnzipEntrySource {
     icu::UnicodeString zip_file_upath;
     icu::UnicodeString zip_entry_uname;
 #endif // STATICLIB_WITH_ICU    
-    su::FileDescriptor fd;
+    st::TinydirFileSource fd;
     FileEntry entry; 
     
     z_stream stream;
@@ -103,7 +105,7 @@ public:
     UnzipEntrySource(std::string zip_file_path, std::string zip_entry_name, FileEntry entry) : 
     zip_file_path(std::move(zip_file_path)),
     zip_entry_name(std::move(zip_entry_name)),
-    fd(this->zip_file_path, 'r'),
+    fd(this->zip_file_path),
 #endif // STATICLIB_WITH_ICU   
     entry(entry),    
     avail_out(entry.uncomp_length) {
@@ -112,12 +114,12 @@ public:
         init_zlib_stream();
     }
     
-    std::streamsize read(char* buffer, std::streamsize length) {
+    std::streamsize read(sc::span<char> span) {
         if (avail_out > 0) {
-            size_t len_out = std::min(static_cast<size_t>(length), avail_out);
+            size_t len_out = span.size() <= avail_out ? span.size() : avail_out;
             switch (entry.comp_method) {
-            case ZLIB_METHOD_STORE: return read_store(buffer, len_out);
-            case ZLIB_METHOD_INFLATE: return read_inflate(buffer, len_out);
+            case ZLIB_METHOD_STORE: return read_store(span.data(), len_out);
+            case ZLIB_METHOD_INFLATE: return read_inflate(span.data(), len_out);
             default: throw UnzipException(TRACEMSG(
                     "Unsupported compression method: [" + sc::to_string(entry.comp_method) + "],"
                     " in entry: [" + zip_entry_name + "],"
@@ -138,10 +140,10 @@ private:
                     " must be: [" + sc::to_string(ZIP_CD_START_SIGNATURE) + "]"));
         }
         std::array<char, 32> skip;
-        io::skip(fd, skip.data(), skip.size(), 22);
+        io::skip(fd, skip, 22);
         uint16_t namelen = en::read_16_le<uint16_t>(fd);
         uint16_t exlen = en::read_16_le<uint16_t>(fd);
-        io::skip(fd, skip.data(), skip.size(), namelen + exlen);
+        io::skip(fd, skip, namelen + exlen);
     }
     
     void init_zlib_stream() {
@@ -155,7 +157,7 @@ private:
         // fill buffer if empty
         if (0 == avail) {
             size_t limlen = std::min(buf.size(), entry.comp_length - count_in);
-            avail = io::read_all(fd, buf.data(), limlen);
+            avail = io::read_all(fd, {buf.data(), limlen});
             pos = 0;
             count_in += avail;
         }
@@ -182,7 +184,7 @@ private:
     }
     
     std::streamsize read_store(char* buffer, size_t len_out) {
-        size_t res = io::read_all(fd, buffer, len_out);
+        size_t res = io::read_all(fd, {buffer, len_out});
         avail_out -= res;
         return res > 0 ? res : std::char_traits<char>::eof();
     }
@@ -191,11 +193,11 @@ private:
 } // namespace
 
 #ifdef STATICLIB_WITH_ICU
-std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const icu::UnicodeString& entry_uname) {
+std::unique_ptr<std::streambuf> open_zip_entry(const UnzipFileIndex& idx, const icu::UnicodeString& entry_uname) {
     std::string entry_name = to_utf8(entry_uname);
     auto desc = idx.find_zip_entry(entry_uname);
 #else
-std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name) {
+std::unique_ptr<std::streambuf> open_zip_entry(const UnzipFileIndex& idx, const std::string& entry_name) {
     auto desc = idx.find_zip_entry(entry_name);
 #endif // STATICLIB_WITH_ICU   
     if (-1 == desc.offset) throw UnzipException(TRACEMSG(
@@ -208,7 +210,7 @@ std::unique_ptr<std::istream> open_zip_entry(const UnzipFileIndex& idx, const st
         auto src_ptr = new UnzipEntrySource{idx.get_zip_file_path(), entry_name, desc};
 #endif // STATICLIB_WITH_ICU
         auto usrc = io::make_unique_source(src_ptr);
-        return io::make_source_istream_ptr(std::move(usrc));
+        return std::unique_ptr<std::streambuf>(io::make_unbuffered_istreambuf_ptr(std::move(usrc)));
     } catch (const std::exception& e) {
         throw UnzipException(TRACEMSG(
                 "Error opening zip entry: [" + entry_name + "]" +

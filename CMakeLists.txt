@@ -52,6 +52,7 @@ if ( NOT DEFINED STATICLIB_TOOLCHAIN )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_endian )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_pimpl )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_utils )
+    staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_tinydir )
 endif ( )
 
 # dependencies
@@ -61,7 +62,8 @@ set ( ${PROJECT_NAME}_DEPS_PUBLIC
         staticlib_endian
         staticlib_io
         staticlib_pimpl
-        staticlib_utils )
+        staticlib_utils 
+        staticlib_tinydir )
 set ( ${PROJECT_NAME}_DEPS_PRIVATE
         zlib )
 set ( ${PROJECT_NAME}_DEPS ${${PROJECT_NAME}_DEPS_PUBLIC} ${${PROJECT_NAME}_DEPS_PRIVATE} )

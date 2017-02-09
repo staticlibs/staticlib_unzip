@@ -37,7 +37,7 @@ namespace uz = staticlib::unzip;
 namespace io = staticlib::io;
 
 void test_read_inflate() {
-    uz::UnzipFileIndex idx{"../test/data/bundle.zip"};
+    uz::unzip_file_index idx{"../test/data/bundle.zip"};
     std::ostringstream out{};
     io::streambuf_sink sink{out.rdbuf()};
     auto ptr = uz::open_zip_entry(idx, "bundle/bbbb.txt");
@@ -49,7 +49,7 @@ void test_read_inflate() {
 }
 
 void test_read_store() {
-    uz::UnzipFileIndex idx{"../test/data/bundle.zip"};
+    uz::unzip_file_index idx{"../test/data/bundle.zip"};
     std::ostringstream out{};
     io::streambuf_sink sink{out.rdbuf()};
     auto ptr = uz::open_zip_entry(idx, "bundle/aaa.txt");
@@ -61,7 +61,7 @@ void test_read_store() {
 }
 
 void test_read_manual() {
-    uz::UnzipFileIndex idx{"../test/data/test.zip"};
+    uz::unzip_file_index idx{"../test/data/test.zip"};
     slassert(2 == idx.get_entries().size());
     slassert("foo.txt" == idx.get_entries()[0]);
     slassert("bar/baz.txt" == idx.get_entries()[1]);

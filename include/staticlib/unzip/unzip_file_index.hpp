@@ -15,14 +15,14 @@
  */
 
 /* 
- * File:   UnzipFileIndex.hpp
+ * File:   unzip_file_index.hpp
  * Author: alex
  *
  * Created on October 8, 2015, 6:58 PM
  */
 
-#ifndef STATICLIB_UNZIP_UNZIPFILEINDEX_HPP
-#define	STATICLIB_UNZIP_UNZIPFILEINDEX_HPP
+#ifndef STATICLIB_UNZIP_UNZIP_FILE_INDEX_HPP
+#define	STATICLIB_UNZIP_UNZIP_FILE_INDEX_HPP
 
 #include <string>
 #include <utility>
@@ -38,7 +38,7 @@ namespace unzip {
 /**
  * Represents ZIP file entry
  */
-struct FileEntry {
+struct file_entry {
     /**
      * Entry data offset from the start of the file
      */
@@ -59,7 +59,7 @@ struct FileEntry {
     /**
      * Constructor, constructs an empty entry
      */
-    FileEntry() { }
+    file_entry() { }
     
     /**
      * Constructor
@@ -69,7 +69,7 @@ struct FileEntry {
      * @param uncomp_length uncompressed length
      * @param comp_method compression method
      */
-    FileEntry(int32_t offset, int32_t comp_length, int32_t uncomp_length, uint16_t comp_method) :
+    file_entry(int32_t offset, int32_t comp_length, int32_t uncomp_length, uint16_t comp_method) :
     offset(offset),
     comp_length(comp_length),
     uncomp_length(uncomp_length),
@@ -88,26 +88,26 @@ struct FileEntry {
 /**
  * Represents an index over the entries inside the ZIP file
  */
-class UnzipFileIndex : public staticlib::pimpl::PimplObject {
+class unzip_file_index : public staticlib::pimpl::pimpl_object {
 protected:
     /**
      * Implementation class
      */
-    class Impl;
+    class impl;
 public:
     /**
      * PIMPL-specific constructor
      * 
      * @param pimpl impl object
      */
-    PIMPL_CONSTRUCTOR(UnzipFileIndex)
+    PIMPL_CONSTRUCTOR(unzip_file_index)
             
     /**
      * Constructor
      * 
      * @param zip_file_path path to the ZIP file
      */
-    UnzipFileIndex(std::string zip_file_path);
+    unzip_file_index(std::string zip_file_path);
     
     /**
      * Returns the ZIP entry with the specified name
@@ -115,7 +115,7 @@ public:
      * @param name name of ZIP entry
      * @return ZIP entry with the specified name, empty entry if not found
      */
-    FileEntry find_zip_entry(const std::string& name) const;
+    file_entry find_zip_entry(const std::string& name) const;
     
     /**
      * Returns a path to the ZIP file
@@ -135,5 +135,5 @@ public:
 } // namespace
 }
 
-#endif	/* STATICLIB_UNZIP_UNZIPFILEINDEX_HPP */
+#endif	/* STATICLIB_UNZIP_UNZIP_FILE_INDEX_HPP */
 

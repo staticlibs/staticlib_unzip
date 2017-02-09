@@ -15,13 +15,13 @@
  */
 
 /* 
- * File:   UnzipFileIndex.cpp
+ * File:   unzip_file_index.cpp
  * Author: alex
  * 
  * Created on October 8, 2015, 8:03 PM
  */
 
-#include "staticlib/unzip/UnzipFileIndex.hpp"
+#include "staticlib/unzip/unzip_file_index.hpp"
 
 #include <unordered_map>
 #include <vector>
@@ -40,7 +40,7 @@
 #include "staticlib/tinydir.hpp"
 #include "staticlib/pimpl/pimpl_forward_macros.hpp"
 
-#include "staticlib/unzip/UnzipException.hpp"
+#include "staticlib/unzip/unzip_exception.hpp"
 
 
 namespace staticlib {
@@ -54,23 +54,23 @@ namespace io = staticlib::io;
 namespace su = staticlib::utils;
 namespace st = staticlib::tinydir;
 
-const uint32_t ZIP_CD_START_SIGNATURE = 0x02014b50;
+const uint32_t zip_cd_start_signature = 0x02014b50;
 
-struct CentralDirectory {
+struct central_directory {
     uint32_t offset;
     uint16_t records_count;
     
-    CentralDirectory(uint32_t offset, uint16_t records_count) :
+    central_directory(uint32_t offset, uint16_t records_count) :
     offset(offset), 
     records_count(records_count) { }
 };
 
-struct NamedFileEntry {
+struct named_file_entry {
     std::string name;
     uint16_t cd_en_size;
-    FileEntry entry;
+    file_entry entry;
 
-    NamedFileEntry(std::string name, uint16_t cd_en_size, int32_t offset, int32_t comp_length, 
+    named_file_entry(std::string name, uint16_t cd_en_size, int32_t offset, int32_t comp_length, 
             int32_t uncomp_length, uint16_t comp_method) :
     name(std::move(name)),
     cd_en_size(cd_en_size),
@@ -84,19 +84,19 @@ struct NamedFileEntry {
 
 }
 
-class UnzipFileIndex::Impl : public staticlib::pimpl::PimplObject::Impl {
+class unzip_file_index::impl : public staticlib::pimpl::pimpl_object::impl {
     std::string zip_file_path;
-    std::unordered_map<std::string, FileEntry> en_map{};
+    std::unordered_map<std::string, file_entry> en_map{};
     std::vector<std::string> en_list{};
     
 public:
-    ~Impl() STATICLIB_NOEXCEPT { };
+    ~impl() STATICLIB_NOEXCEPT { };
     
-    Impl(std::string zip_file_path) :
+    impl(std::string zip_file_path) :
     zip_file_path(std::move(zip_file_path)) {
-        auto src = io::make_buffered_source(st::TinydirFileSource(this->zip_file_path));
+        auto src = io::make_buffered_source(st::file_source(this->zip_file_path));
         size_t cd_buf_len = std::min(static_cast<size_t>(src.get_source().size()), src.get_buffer().size());
-        CentralDirectory cd = find_cd(src.get_source(), src.get_buffer().data(), cd_buf_len);
+        central_directory cd = find_cd(src.get_source(), src.get_buffer().data(), cd_buf_len);
         src.get_source().seek(cd.offset);
         std::memset(src.get_buffer().data(), 0, src.get_buffer().size());
         for (int i = 0; i < cd.records_count; i++) {
@@ -104,31 +104,31 @@ public:
             if (en.is_file()) {
                 en_list.push_back(en.name);
                 auto res = en_map.emplace(std::move(en.name), en.entry); // value
-                if (!res.second) throw UnzipException(TRACEMSG(
+                if (!res.second) throw unzip_exception(TRACEMSG(
                         "Invalid Duplicate entry: [" + (res.first)->first + "] in a zip file: [" + this->zip_file_path + "]"));
             }
         }
     }
 
-    FileEntry find_zip_entry(const UnzipFileIndex&, const std::string& name) const {
+    file_entry find_zip_entry(const unzip_file_index&, const std::string& name) const {
         auto res = en_map.find(name);
         if(res != en_map.end()) {
             return res->second;
         } else {
-            return FileEntry{};
+            return file_entry{};
         }
     }
     
-    const std::string& get_zip_file_path(const UnzipFileIndex&) const {
+    const std::string& get_zip_file_path(const unzip_file_index&) const {
         return zip_file_path;
     }
     
-    const std::vector<std::string>& get_entries(const UnzipFileIndex&) const {
+    const std::vector<std::string>& get_entries(const unzip_file_index&) const {
         return en_list;
     }
     
 private:    
-    CentralDirectory find_cd(st::TinydirFileSource& fd, char* buf, std::streamsize buf_size) {
+    central_directory find_cd(st::file_source& fd, char* buf, std::streamsize buf_size) {
         fd.seek(-buf_size, 'e');
         io::read_exact(fd, {buf, buf_size});
         std::streamsize eocd = -1;
@@ -137,10 +137,10 @@ private:
                 eocd = i - 3;
             }
         }
-        if (-1 == eocd) throw UnzipException(TRACEMSG("Cannot find Central Directory" + 
+        if (-1 == eocd) throw unzip_exception(TRACEMSG("Cannot find Central Directory" + 
                 " in an alleged zip file: [" + zip_file_path + "],"
                 " searching through: [" + sc::to_string(buf_size) + "] bytes on the end of the file"));
-        if (eocd > buf_size - 22) throw UnzipException(TRACEMSG("Invalid EOCD position " + 
+        if (eocd > buf_size - 22) throw unzip_exception(TRACEMSG("Invalid EOCD position " + 
                 " (from end): [" + sc::to_string(buf_size - eocd) + "],"
                 " in an alleged zip file: [" + zip_file_path + "]"));
         uint32_t offset; 
@@ -149,16 +149,16 @@ private:
         uint16_t records_count;
         ::memcpy(std::addressof(records_count), buf + eocd + 8, 2);
         records_count = le16toh(records_count);
-        return CentralDirectory(offset, records_count);
+        return central_directory(offset, records_count);
     }
   
-    NamedFileEntry read_next_entry(io::buffered_source<st::TinydirFileSource>& src) {
+    named_file_entry read_next_entry(io::buffered_source<st::file_source>& src) {
         uint32_t sig = en::read_32_le<uint32_t>(src);
-        if (ZIP_CD_START_SIGNATURE != sig) {
-            throw UnzipException(TRACEMSG("Cannot find Central Directory file header" + 
+        if (zip_cd_start_signature != sig) {
+            throw unzip_exception(TRACEMSG("Cannot find Central Directory file header" + 
                     " in an alleged zip file: [" + zip_file_path + "]," +
                     " invalid signature: [" + sc::to_string(sig) + "]," +
-                    " must be: [" + sc::to_string(ZIP_CD_START_SIGNATURE) + "]"));
+                    " must be: [" + sc::to_string(zip_cd_start_signature) + "]"));
         }
         std::array<char, 32> skip;
         io::skip(src, skip, 6);
@@ -176,13 +176,13 @@ private:
         io::read_exact(src, {std::addressof(filename.front()), namelen});
         // skip extra and comment
         io::skip(src, skip, extralen + commentlen);
-        return NamedFileEntry(std::move(filename), 46 + namelen + extralen + commentlen, offset, comp_length, uncomp_length, comp_method);
+        return named_file_entry(std::move(filename), 46 + namelen + extralen + commentlen, offset, comp_length, uncomp_length, comp_method);
     }
 };
-PIMPL_FORWARD_CONSTRUCTOR(UnzipFileIndex, (std::string), (), UnzipException)
-PIMPL_FORWARD_METHOD(UnzipFileIndex, FileEntry, find_zip_entry, (const std::string&), (const), UnzipException)
-PIMPL_FORWARD_METHOD(UnzipFileIndex, const std::string&, get_zip_file_path, (), (const), UnzipException)
-PIMPL_FORWARD_METHOD(UnzipFileIndex, const std::vector<std::string>&, get_entries, (), (const), UnzipException)
+PIMPL_FORWARD_CONSTRUCTOR(unzip_file_index, (std::string), (), unzip_exception)
+PIMPL_FORWARD_METHOD(unzip_file_index, file_entry, find_zip_entry, (const std::string&), (const), unzip_exception)
+PIMPL_FORWARD_METHOD(unzip_file_index, const std::string&, get_zip_file_path, (), (const), unzip_exception)
+PIMPL_FORWARD_METHOD(unzip_file_index, const std::vector<std::string>&, get_entries, (), (const), unzip_exception)
 
 } // namespace
 }

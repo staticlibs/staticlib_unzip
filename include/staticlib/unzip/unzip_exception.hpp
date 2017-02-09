@@ -15,16 +15,16 @@
  */
 
 /* 
- * File:   UnzipException.hpp
+ * File:   unzip_exception.hpp
  * Author: alex
  *
  * Created on October 8, 2015, 9:10 PM
  */
 
-#ifndef STATICLIB_UNZIP_UNZIPEXCEPTION_HPP
-#define	STATICLIB_UNZIP_UNZIPEXCEPTION_HPP
+#ifndef STATICLIB_UNZIP_UNZIP_EXCEPTION_HPP
+#define	STATICLIB_UNZIP_UNZIP_EXCEPTION_HPP
 
-#include "staticlib/config/BaseException.hpp"
+#include "staticlib/config/staticlib_exception.hpp"
 
 namespace staticlib {
 namespace unzip {
@@ -32,25 +32,25 @@ namespace unzip {
 /**
  * Module specific exception
  */
-class UnzipException : public staticlib::config::BaseException {
+class unzip_exception : public staticlib::config::staticlib_exception {
 public:
     /**
      * Default constructor
      */
-    UnzipException() = default;
+    unzip_exception() = default;
 
     /**
      * Constructor with message
      * 
      * @param msg error message
      */
-    UnzipException(const std::string& msg) :
-    staticlib::config::BaseException(msg) { }        
+    unzip_exception(const std::string& msg) :
+    staticlib::config::staticlib_exception(msg) { }        
 
 };
 
 } //namespace
 }
 
-#endif	/* STATICLIB_UNZIP_UNZIPEXCEPTION_HPP */
+#endif	/* STATICLIB_UNZIP_UNZIP_EXCEPTION_HPP */
 

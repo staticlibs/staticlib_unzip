@@ -28,7 +28,7 @@
 #include <streambuf>
 #include <string>
 
-#include "staticlib/unzip/unzip_file_index.hpp"
+#include "staticlib/unzip/file_index.hpp"
 
 namespace staticlib {
 namespace unzip {
@@ -41,7 +41,7 @@ namespace unzip {
  * @param entry_name ZIP entry name
  * @return unique pointer to the unbuffered streambuf
  */
-std::unique_ptr<std::streambuf> open_zip_entry(const unzip_file_index& idx, const std::string& entry_name);
+std::unique_ptr<std::streambuf> open_zip_entry(const file_index& idx, const std::string& entry_name);
 
 } // namespace
 }

@@ -52,6 +52,11 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 Changelog
 ---------
 
+**2017-05-19**
+
+ * version 1.0.5
+ * deps update
+
 **2016-06-29**
 
  * version 1.0.5

@@ -33,44 +33,38 @@
 
 #include "staticlib/io.hpp"
 
-namespace uz = staticlib::unzip;
-namespace io = staticlib::io;
-
 void test_read_inflate() {
-    uz::unzip_file_index idx{"../test/data/bundle.zip"};
+    sl::unzip::file_index idx{"../test/data/bundle.zip"};
     std::ostringstream out{};
-    io::streambuf_sink sink{out.rdbuf()};
-    auto ptr = uz::open_zip_entry(idx, "bundle/bbbb.txt");
-    io::streambuf_source src{ptr.get()};
-    std::array<char, 4096> buf{{}};
-    io::copy_all(src, sink, buf);
+    sl::io::streambuf_sink sink{out.rdbuf()};
+    auto ptr = sl::unzip::open_zip_entry(idx, "bundle/bbbb.txt");
+    sl::io::streambuf_source src{ptr.get()};
+    sl::io::copy_all(src, sink);
     // std::cout << "[" << out.str() << "]" << std::endl;
     slassert("bbbbbbbb\n" == out.str());
 }
 
 void test_read_store() {
-    uz::unzip_file_index idx{"../test/data/bundle.zip"};
+    sl::unzip::file_index idx{"../test/data/bundle.zip"};
     std::ostringstream out{};
-    io::streambuf_sink sink{out.rdbuf()};
-    auto ptr = uz::open_zip_entry(idx, "bundle/aaa.txt");
-    io::streambuf_source src{ptr.get()};
-    std::array<char, 4096> buf{{}};
-    io::copy_all(src, sink, buf);
+    sl::io::streambuf_sink sink{out.rdbuf()};
+    auto ptr = sl::unzip::open_zip_entry(idx, "bundle/aaa.txt");
+    sl::io::streambuf_source src{ptr.get()};
+    sl::io::copy_all(src, sink);
     // std::cout << "[" << out.str() << "]" << std::endl;
     slassert("aaa\n" == out.str());
 }
 
 void test_read_manual() {
-    uz::unzip_file_index idx{"../test/data/test.zip"};
+    sl::unzip::file_index idx{"../test/data/test.zip"};
     slassert(2 == idx.get_entries().size());
     slassert("foo.txt" == idx.get_entries()[0]);
     slassert("bar/baz.txt" == idx.get_entries()[1]);
     std::ostringstream out{};
-    io::streambuf_sink sink{out.rdbuf()};
-    auto ptr = uz::open_zip_entry(idx, "bar/baz.txt");
-    io::streambuf_source src{ptr.get()};
-    std::array<char, 4096> buf{{}};
-    io::copy_all(src, sink, buf);
+    sl::io::streambuf_sink sink{out.rdbuf()};
+    auto ptr = sl::unzip::open_zip_entry(idx, "bar/baz.txt");
+    sl::io::streambuf_source src{ptr.get()};
+    sl::io::copy_all(src, sink);
 //    std::cout << "[" << out.str() << "]" << std::endl;
     slassert("bye" == out.str());
 }

@@ -15,14 +15,14 @@
  */
 
 /* 
- * File:   unzip_file_index.hpp
+ * File:   file_index.hpp
  * Author: alex
  *
  * Created on October 8, 2015, 6:58 PM
  */
 
-#ifndef STATICLIB_UNZIP_UNZIP_FILE_INDEX_HPP
-#define	STATICLIB_UNZIP_UNZIP_FILE_INDEX_HPP
+#ifndef STATICLIB_UNZIP_FILE_INDEX_HPP
+#define	STATICLIB_UNZIP_FILE_INDEX_HPP
 
 #include <string>
 #include <utility>
@@ -88,7 +88,7 @@ struct file_entry {
 /**
  * Represents an index over the entries inside the ZIP file
  */
-class unzip_file_index : public staticlib::pimpl::pimpl_object {
+class file_index : public sl::pimpl::object {
 protected:
     /**
      * Implementation class
@@ -100,14 +100,14 @@ public:
      * 
      * @param pimpl impl object
      */
-    PIMPL_CONSTRUCTOR(unzip_file_index)
+    PIMPL_CONSTRUCTOR(file_index)
             
     /**
      * Constructor
      * 
      * @param zip_file_path path to the ZIP file
      */
-    unzip_file_index(std::string zip_file_path);
+    file_index(std::string zip_file_path);
     
     /**
      * Returns the ZIP entry with the specified name
@@ -135,5 +135,5 @@ public:
 } // namespace
 }
 
-#endif	/* STATICLIB_UNZIP_UNZIP_FILE_INDEX_HPP */
+#endif	/* STATICLIB_UNZIP_FILE_INDEX_HPP */
 

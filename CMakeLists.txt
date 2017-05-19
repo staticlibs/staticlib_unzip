@@ -16,7 +16,7 @@ cmake_minimum_required ( VERSION 2.8.12 )
 
 # project
 project ( staticlib_unzip CXX )
-set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.0.5 )
+set ( ${PROJECT_NAME}_STATICLIB_VERSION 1.0.6 )
 set ( ${PROJECT_NAME}_DESCRIPTION "Staticlib unZIP library" )
 set ( ${PROJECT_NAME}_URL https://github.com/staticlibs/staticlib_unzip )
 include ( ${CMAKE_CURRENT_LIST_DIR}/resources/macros.cmake )
@@ -48,6 +48,7 @@ if ( NOT DEFINED STATICLIB_TOOLCHAIN )
         staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../external_zlib )
     endif (  )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_config )
+    staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_support )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_io )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_endian )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_pimpl )
@@ -59,6 +60,7 @@ endif ( )
 set ( ${PROJECT_NAME}_OPTIONS "" )
 set ( ${PROJECT_NAME}_DEPS_PUBLIC
         staticlib_config
+        staticlib_support
         staticlib_endian
         staticlib_io
         staticlib_pimpl

@@ -15,13 +15,13 @@
  */
 
 /* 
- * File:   unzip_file_index_test.cpp
+ * File:   file_index_test.cpp
  * Author: alex
  *
  * Created on October 12, 2015, 5:58 AM
  */
 
-#include "staticlib/unzip/unzip_file_index.hpp"
+#include "staticlib/unzip/file_index.hpp"
 
 #include <iostream>
 
@@ -31,7 +31,7 @@
 namespace uz = staticlib::unzip;
 
 void test_entries() {
-    uz::unzip_file_index idx{"../test/data/bundle.zip"};
+    uz::file_index idx{"../test/data/bundle.zip"};
     auto desc_aaa = idx.find_zip_entry("bundle/aaa.txt");
     slassert(144 == desc_aaa.offset);
     slassert(4 == desc_aaa.comp_length);

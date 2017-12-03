@@ -31,6 +31,8 @@
 
 #include "staticlib/pimpl.hpp"
 
+// do not includes zlib.h
+#include "staticlib/compress/zip_compression_method.hpp"
 
 namespace staticlib {
 namespace unzip {

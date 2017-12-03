@@ -23,13 +23,12 @@
 
 #include "staticlib/unzip/operations.hpp"
 
+#include <cstring>
+#include <algorithm>
+#include <array>
 #include <ios>
 #include <string>
-#include <array>
-#include <algorithm>
-#include <cstring>
-
-#include "zlib.h"
+#include <memory>
 
 // http://stackoverflow.com/a/1904659/314015
 #define NOMINMAX
@@ -37,6 +36,7 @@
 #include "staticlib/config.hpp"
 #include "staticlib/endian.hpp"
 #include "staticlib/io.hpp"
+#include "staticlib/compress.hpp"
 #include "staticlib/utils.hpp"
 #include "staticlib/tinydir.hpp"
 
@@ -49,53 +49,48 @@ namespace unzip {
 namespace { // anonymous
 
 const uint32_t zip_cd_start_signature = 0x04034b50;
-const uint16_t zlib_method_store = 0x00;
-const uint16_t zib_method_inflate = 0x08;
 
 class unzip_entry_source {
+    using tinydir_file_ref_type = sl::io::reference_source<sl::tinydir::file_source>;
+    using inflater_type = sl::compress::inflate_source<tinydir_file_ref_type>;
+
     std::string zip_file_path;
     std::string zip_entry_name;
-    sl::tinydir::file_source fd;
     file_entry entry; 
-    
-    z_stream stream;
-    std::array<char, 8192> buf;
-    size_t pos = 0;
-    size_t avail = 0;
-    size_t count_in = 0;
+    sl::tinydir::file_source fd;
+    std::unique_ptr<inflater_type> inflater;
+
     size_t avail_out;
     
 public:
-    ~unzip_entry_source() STATICLIB_NOEXCEPT {
-        try {
-            inflateEnd(std::addressof(stream));
-        } catch(...) {
-            // ignore
-        }
-    }
-
-    unzip_entry_source(std::string zip_file_path, std::string zip_entry_name, file_entry entry) : 
-    zip_file_path(std::move(zip_file_path)),
-    zip_entry_name(std::move(zip_entry_name)),
+    unzip_entry_source(const std::string& zip_file_path, const std::string& zip_entry_name, file_entry entry) : 
+    zip_file_path(std::string(zip_file_path.data(), zip_file_path.length())),
+    zip_entry_name(std::string(zip_entry_name.data(), zip_entry_name.length())),
+    entry(entry),
     fd(this->zip_file_path),
-    entry(entry),    
+    inflater(nullptr),
     avail_out(entry.uncomp_length) {
         fd.seek(entry.offset);
         check_header();
-        init_zlib_stream();
+        switch (this->entry.comp_method) {
+        case static_cast<uint16_t>(sl::compress::zip_compression_method::store): break;
+        case static_cast<uint16_t>(sl::compress::zip_compression_method::deflate): inflater.reset(
+                new sl::compress::inflate_source<tinydir_file_ref_type>(
+                        sl::io::make_reference_source(this->fd)));
+            break;
+        default: throw unzip_exception(TRACEMSG(
+                "Unsupported compression method: [" + sl::support::to_string(this->entry.comp_method) + "],"
+                " in entry: [" + this->zip_entry_name + "],"
+                " in ZIP file: [" + this->zip_file_path + "]"));
+        }
     }
     
     std::streamsize read(sl::io::span<char> span) {
         if (avail_out > 0) {
             size_t len_out = span.size() <= avail_out ? span.size() : avail_out;
-            switch (entry.comp_method) {
-            case zlib_method_store: return read_store(span.data(), len_out);
-            case zib_method_inflate: return read_inflate(span.data(), len_out);
-            default: throw unzip_exception(TRACEMSG(
-                    "Unsupported compression method: [" + sl::support::to_string(entry.comp_method) + "],"
-                    " in entry: [" + zip_entry_name + "],"
-                    " in ZIP file: [" + zip_file_path + "]"));
-            }
+            size_t res = read_data(span.data(), len_out);
+            avail_out -= res;
+            return res > 0 ? res : std::char_traits<char>::eof();
         } 
         return std::char_traits<char>::eof();
     }
@@ -116,48 +111,20 @@ private:
         uint16_t exlen = sl::endian::read_16_le<uint16_t>(fd);
         sl::io::skip(fd, skip, namelen + exlen);
     }
-    
-    void init_zlib_stream() {
-        std::memset(std::addressof(stream), 0, sizeof(stream));
-        auto err = inflateInit2(std::addressof(stream), -MAX_WBITS);
-        if (Z_OK != err) throw unzip_exception(TRACEMSG(
-                "Error initializing ZIP stream: [" + zError(err) + "], file: [" + zip_file_path + "]"));
-    }
-    
-    std::streamsize read_inflate(char* buffer, size_t len_out) {
-        // fill buffer if empty
-        if (0 == avail) {
-            size_t limlen = std::min(buf.size(), entry.comp_length - count_in);
-            avail = sl::io::read_all(fd, {buf.data(), limlen});
-            pos = 0;
-            count_in += avail;
-        }
-        // prepare zlib stream
-        stream.next_in = reinterpret_cast<unsigned char*> (buf.data() + pos);
-        stream.avail_in = static_cast<uInt>(avail);
-        stream.next_out = reinterpret_cast<unsigned char*> (buffer);
-        stream.avail_out = static_cast<uInt>(len_out);
-        // call inflate
-        auto err = ::inflate(std::addressof(stream), Z_FINISH);
-        if (Z_OK == err || Z_STREAM_END == err || Z_BUF_ERROR == err) {
-            std::streamsize read = avail - stream.avail_in;
-            std::streamsize written = len_out - stream.avail_out;
-            size_t uread = static_cast<size_t>(read);
-            pos += uread;
-            avail -= uread;
-            avail_out -= static_cast<size_t>(written);
-            if (written > 0 || Z_STREAM_END != err) {
-                return written;
+
+    size_t read_data(char* buffer, size_t len_out) {
+            switch (entry.comp_method) {
+            case static_cast<uint16_t>(sl::compress::zip_compression_method::store): {
+                return sl::io::read_all(fd, {buffer, len_out});
             }
-            return std::char_traits<char>::eof();
-        } else throw unzip_exception(TRACEMSG(
-                "Inflate error: [" + zError(err) + "], file: [" + zip_file_path + "]"));
-    }
-    
-    std::streamsize read_store(char* buffer, size_t len_out) {
-        size_t res = sl::io::read_all(fd, {buffer, len_out});
-        avail_out -= res;
-        return res > 0 ? res : std::char_traits<char>::eof();
+            case static_cast<uint16_t>(sl::compress::zip_compression_method::deflate): {
+                return sl::io::read_all(*inflater, {buffer, len_out});
+            }
+            default: throw unzip_exception(TRACEMSG(
+                    "Unsupported compression method: [" + sl::support::to_string(entry.comp_method) + "],"
+                    " in entry: [" + zip_entry_name + "],"
+                    " in ZIP file: [" + zip_file_path + "]"));
+            }
     }
 };
 

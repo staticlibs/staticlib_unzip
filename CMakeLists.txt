@@ -51,6 +51,7 @@ if ( NOT DEFINED STATICLIB_TOOLCHAIN )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_support )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_io )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_endian )
+    staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_compress )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_pimpl )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_utils )
     staticlib_unzip_add_subdirectory ( ${CMAKE_CURRENT_LIST_DIR}/../staticlib_tinydir )
@@ -63,6 +64,7 @@ set ( ${PROJECT_NAME}_DEPS_PUBLIC
         staticlib_support
         staticlib_endian
         staticlib_io
+        staticlib_compress
         staticlib_pimpl
         staticlib_utils 
         staticlib_tinydir )

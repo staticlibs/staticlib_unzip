@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">staticlib_unzip
-   &#160;<span id="projectnumber">1.0.5</span>
+   &#160;<span id="projectnumber">1.0.6</span>
    </div>
   </td>
  </tr>
@@ -92,9 +92,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;memory&gt;</code><br/>
-<code>#include &lt;istream&gt;</code><br/>
+<code>#include &lt;streambuf&gt;</code><br/>
 <code>#include &lt;string&gt;</code><br/>
-<code>#include &quot;<a class="el" href="UnzipFileIndex_8hpp_source.html">staticlib/unzip/UnzipFileIndex.hpp</a>&quot;</code><br/>
+<code>#include &quot;<a class="el" href="file__index_8hpp_source.html">staticlib/unzip/file_index.hpp</a>&quot;</code><br/>
 </div>
 <p><a href="operations_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -105,13 +105,13 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a205935f29e20d3cc3a12af2911b6ee7a"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; std::istream &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestaticlib_1_1unzip.html#a205935f29e20d3cc3a12af2911b6ee7a">staticlib::unzip::open_zip_entry</a> (const UnzipFileIndex &amp;idx, const std::string &amp;entry_name)</td></tr>
-<tr class="memdesc:a205935f29e20d3cc3a12af2911b6ee7a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens "input stream" to the specified ZIP entry in the ZIP file corresponding to the specified index.  <a href="#a205935f29e20d3cc3a12af2911b6ee7a"></a><br/></td></tr>
+<tr class="memitem:aa63a4e5055400c7f25b2f44026a06eb7"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; std::streambuf &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacestaticlib_1_1unzip.html#aa63a4e5055400c7f25b2f44026a06eb7">staticlib::unzip::open_zip_entry</a> (const file_index &amp;idx, const std::string &amp;entry_name)</td></tr>
+<tr class="memdesc:aa63a4e5055400c7f25b2f44026a06eb7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Opens "input stream" to the specified ZIP entry in the ZIP file corresponding to the specified index.  <a href="#aa63a4e5055400c7f25b2f44026a06eb7"></a><br/></td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jun 29 2016 08:49:14 for staticlib_unzip by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Dec 24 2017 19:13:06 for staticlib_unzip by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.1.2
 </small></address>

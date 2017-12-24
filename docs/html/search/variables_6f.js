@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['offset',['offset',['../structstaticlib_1_1unzip_1_1FileEntry.html#a5df0cefea48cce9a143c6dfab4104593',1,'staticlib::unzip::FileEntry']]]
+  ['offset',['offset',['../structstaticlib_1_1unzip_1_1file__entry.html#af8c3afd554c945d5b3c3d25b59090036',1,'staticlib::unzip::file_entry']]]
 ];

@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['comp_5flength',['comp_length',['../structstaticlib_1_1unzip_1_1FileEntry.html#a2d3050a71b7dbd22ce732f4b916e21ad',1,'staticlib::unzip::FileEntry']]],
-  ['comp_5fmethod',['comp_method',['../structstaticlib_1_1unzip_1_1FileEntry.html#a1d149f78573f7fde34143d2e20a1f5ba',1,'staticlib::unzip::FileEntry']]]
+  ['comp_5flength',['comp_length',['../structstaticlib_1_1unzip_1_1file__entry.html#af058a9c2643f29dd099aed60c9c99c14',1,'staticlib::unzip::file_entry']]],
+  ['comp_5fmethod',['comp_method',['../structstaticlib_1_1unzip_1_1file__entry.html#a69dbb347ae7a38f2fc6d01b7c807de77',1,'staticlib::unzip::file_entry']]]
 ];

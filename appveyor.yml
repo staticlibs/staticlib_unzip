@@ -34,6 +34,7 @@ install:
   - git clone https://github.com/staticlibs/staticlib_io.git
   - git clone https://github.com/staticlibs/staticlib_endian.git
   - git clone https://github.com/staticlibs/staticlib_compress.git
+  - git clone https://github.com/staticlibs/staticlib_utils.git
   - git clone https://github.com/staticlibs/staticlib_pimpl.git
   - git clone --recursive https://github.com/staticlibs/staticlib_tinydir.git
   - mkdir test

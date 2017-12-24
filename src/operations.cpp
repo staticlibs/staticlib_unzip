@@ -61,7 +61,7 @@ class unzip_entry_source {
     std::unique_ptr<inflater_type> inflater;
 
     size_t avail_out;
-    
+
 public:
     unzip_entry_source(const std::string& zip_file_path, const std::string& zip_entry_name, file_entry entry) : 
     zip_file_path(std::string(zip_file_path.data(), zip_file_path.length())),
@@ -84,7 +84,7 @@ public:
                 " in ZIP file: [" + this->zip_file_path + "]"));
         }
     }
-    
+ 
     std::streamsize read(sl::io::span<char> span) {
         if (avail_out > 0) {
             size_t len_out = span.size() <= avail_out ? span.size() : avail_out;
@@ -94,7 +94,7 @@ public:
         } 
         return std::char_traits<char>::eof();
     }
-    
+ 
 private:
     void check_header() {
         uint32_t sig = sl::endian::read_32_le<uint32_t>(fd);

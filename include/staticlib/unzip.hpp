@@ -22,7 +22,7 @@
  */
 
 #ifndef STATICLIB_UNZIP_HPP
-#define	STATICLIB_UNZIP_HPP
+#define STATICLIB_UNZIP_HPP
 
 #include "staticlib/config.hpp"
 
@@ -30,5 +30,5 @@
 #include "staticlib/unzip/file_index.hpp"
 #include "staticlib/unzip/operations.hpp"
 
-#endif	/* STATICLIB_UNZIP_HPP */
+#endif /* STATICLIB_UNZIP_HPP */
 

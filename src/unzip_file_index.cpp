@@ -73,7 +73,7 @@ struct named_file_entry {
     bool is_file() {
         return '/' != name.back();
     }
-    
+
 };
 
 }
@@ -116,12 +116,12 @@ public:
     const std::string& get_zip_file_path(const file_index&) const {
         return zip_file_path;
     }
-    
+
     const std::vector<std::string>& get_entries(const file_index&) const {
         return en_list;
     }
-    
-private:    
+
+private:
     central_directory find_cd(sl::tinydir::file_source& fd, char* buf, std::streamsize buf_size) {
         fd.seek(-buf_size, 'e');
         io::read_exact(fd, {buf, buf_size});
@@ -145,7 +145,7 @@ private:
         records_count = le16toh(records_count);
         return central_directory(offset, records_count);
     }
-  
+
     named_file_entry read_next_entry(io::buffered_source<sl::tinydir::file_source>& src) {
         uint32_t sig = sl::endian::read_32_le<uint32_t>(src);
         if (zip_cd_start_signature != sig) {

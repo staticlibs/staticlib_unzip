@@ -22,7 +22,7 @@
  */
 
 #ifndef STATICLIB_UNZIP_FILE_INDEX_HPP
-#define	STATICLIB_UNZIP_FILE_INDEX_HPP
+#define STATICLIB_UNZIP_FILE_INDEX_HPP
 
 #include <string>
 #include <utility>
@@ -62,7 +62,7 @@ struct file_entry {
      * Constructor, constructs an empty entry
      */
     file_entry() { }
-    
+
     /**
      * Constructor
      * 
@@ -76,7 +76,7 @@ struct file_entry {
     comp_length(comp_length),
     uncomp_length(uncomp_length),
     comp_method(comp_method) { }
-    
+
     /**
      * Returns true if this instance represents an empty (invalid) entry
      * 
@@ -103,14 +103,14 @@ public:
      * @param pimpl impl object
      */
     PIMPL_CONSTRUCTOR(file_index)
-            
+
     /**
      * Constructor
      * 
      * @param zip_file_path path to the ZIP file
      */
     file_index(std::string zip_file_path);
-    
+
     /**
      * Returns the ZIP entry with the specified name
      * 
@@ -125,7 +125,7 @@ public:
      * @return a path to the ZIP file
      */
     const std::string& get_zip_file_path() const;
-    
+ 
     /**
      * Returns a list of ZIP entries names
      * 
@@ -137,5 +137,5 @@ public:
 } // namespace
 }
 
-#endif	/* STATICLIB_UNZIP_FILE_INDEX_HPP */
+#endif /* STATICLIB_UNZIP_FILE_INDEX_HPP */
 

@@ -22,7 +22,7 @@
  */
 
 #ifndef STATICLIB_UNZIP_OPERATIONS_HPP
-#define	STATICLIB_UNZIP_OPERATIONS_HPP
+#define STATICLIB_UNZIP_OPERATIONS_HPP
 
 #include <memory>
 #include <streambuf>
@@ -46,5 +46,5 @@ std::unique_ptr<std::streambuf> open_zip_entry(const file_index& idx, const std:
 } // namespace
 }
 
-#endif	/* STATICLIB_UNZIP_OPERATIONS_HPP */
+#endif /* STATICLIB_UNZIP_OPERATIONS_HPP */
 

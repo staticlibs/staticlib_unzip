@@ -1,9 +1,12 @@
 Staticlibs unZIP library
 ========================
 
+[![travis](https://travis-ci.org/staticlibs/staticlib_unzip.svg?branch=master)](https://travis-ci.org/staticlibs/staticlib_unzip)
+[![appveyor](https://ci.appveyor.com/api/projects/status/github/staticlibs/staticlib_unzip?svg=true)](https://ci.appveyor.com/project/staticlibs/staticlib-unzip)
+
 This project is a part of [Staticlibs](http://staticlibs.net/).
 
-This project allows to open "input streams" to entries inside the ZIP file.
+This project allows to open "input streams" to entries inside the ZIP file. [staticlib_compress](https://github.com/staticlibs/staticlib_compress) library can be used to write ZIP files.
 
 Link to the [API documentation](http://staticlibs.net/staticlib_unzip/docs/html/namespacestaticlib_1_1unzip.html).
 
@@ -26,6 +29,7 @@ Visual Studio development command prompt
     git clone https://github.com/staticlibs/staticlib_endian.git
     git clone https://github.com/staticlibs/staticlib_pimpl.git
     git clone https://github.com/staticlibs/staticlib_utils.git
+    git clone https://github.com/staticlibs/staticlib_compress.git
     git clone https://github.com/staticlibs/staticlib_unzip.git
     cd staticlib_unzip
     mkdir build
@@ -51,6 +55,12 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 
 Changelog
 ---------
+
+**2017-12-24**
+
+ * version 1.0.6
+ * use `inflate_source` from `staticlib_compress`
+ * vs2017 support
 
 **2017-05-19**
 

@@ -26,7 +26,8 @@ install:
   - git clone https://github.com/staticlibs/tools_windows_pkgconfig.git
   - set PATH=%PATH%;c:\projects\tools_windows_pkgconfig\bin
   - git clone https://github.com/staticlibs/cmake.git
-  - git clone --recursive https://github.com/staticlibs/external_zlib.git
+  - git clone https://github.com/staticlibs/external_zlib.git
+  - git clone https://github.com/staticlibs/lookaside_zlib.git
   - git clone https://github.com/staticlibs/staticlib_config.git
   - git clone https://github.com/staticlibs/staticlib_support.git
   - git clone https://github.com/staticlibs/staticlib_io.git
@@ -34,7 +35,8 @@ install:
   - git clone https://github.com/staticlibs/staticlib_compress.git
   - git clone https://github.com/staticlibs/staticlib_utils.git
   - git clone https://github.com/staticlibs/staticlib_pimpl.git
-  - git clone --recursive https://github.com/staticlibs/staticlib_tinydir.git
+  - git clone https://github.com/staticlibs/staticlib_tinydir.git
+  - git clone https://github.com/staticlibs/tinydir.git
   - mkdir test
   - robocopy staticlib_unzip\test\data test\data /e /ndl /njh /njs /nc /ns /np || true
 

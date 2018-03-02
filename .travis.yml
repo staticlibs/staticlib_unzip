@@ -62,7 +62,8 @@ before_script:
   - cd ..
   - git clone https://github.com/staticlibs/cmake.git
 # mac and android
-  - git clone --recursive https://github.com/staticlibs/external_zlib.git
+  - git clone https://github.com/staticlibs/external_zlib.git
+  - git clone https://github.com/staticlibs/lookaside_zlib.git
 # all platforms
   - git clone https://github.com/staticlibs/staticlib_config.git
   - git clone https://github.com/staticlibs/staticlib_support.git
@@ -71,7 +72,8 @@ before_script:
   - git clone https://github.com/staticlibs/staticlib_compress.git
   - git clone https://github.com/staticlibs/staticlib_utils.git
   - git clone https://github.com/staticlibs/staticlib_pimpl.git
-  - git clone --recursive https://github.com/staticlibs/staticlib_tinydir.git
+  - git clone https://github.com/staticlibs/staticlib_tinydir.git
+  - git clone https://github.com/staticlibs/tinydir.git
 # test only
   - rm -rf test
   - mkdir test

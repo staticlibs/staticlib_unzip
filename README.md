@@ -56,6 +56,11 @@ This project is released under the [Apache License 2.0](http://www.apache.org/li
 Changelog
 ---------
 
+**2017-06-12**
+
+ * version 1.0.7
+ * use `istream` source
+
 **2017-12-24**
 
  * version 1.0.6

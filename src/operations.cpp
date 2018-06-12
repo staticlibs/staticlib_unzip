@@ -130,14 +130,13 @@ private:
 
 } // namespace
 
-std::unique_ptr<std::streambuf> open_zip_entry(const file_index& idx, const std::string& entry_name) {
+std::unique_ptr<std::istream> open_zip_entry(const file_index& idx, const std::string& entry_name) {
     auto desc = idx.find_zip_entry(entry_name);
     if (-1 == desc.offset) throw unzip_exception(TRACEMSG(
             "Specified zip entry not found: [" + entry_name + "]"));
     try {
-        auto src_ptr = new unzip_entry_source{idx.get_zip_file_path(), entry_name, desc};
-        auto usrc = sl::io::make_unique_source(src_ptr);
-        return std::unique_ptr<std::streambuf>(sl::io::make_unbuffered_istreambuf_ptr(std::move(usrc)));
+        auto src = sl::io::make_unique_source(new unzip_entry_source(idx.get_zip_file_path(), entry_name, desc));
+        return sl::io::make_source_istream_ptr(std::move(src));
     } catch (const std::exception& e) {
         throw unzip_exception(TRACEMSG(
                 "Error opening zip entry: [" + entry_name + "]" +

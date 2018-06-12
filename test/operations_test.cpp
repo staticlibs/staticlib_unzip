@@ -38,7 +38,7 @@ void test_read_inflate() {
     std::ostringstream out{};
     sl::io::streambuf_sink sink{out.rdbuf()};
     auto ptr = sl::unzip::open_zip_entry(idx, "bundle/bbbb.txt");
-    sl::io::streambuf_source src{ptr.get()};
+    sl::io::streambuf_source src{ptr->rdbuf()};
     sl::io::copy_all(src, sink);
     // std::cout << "[" << out.str() << "]" << std::endl;
     slassert("bbbbbbbb\n" == out.str());
@@ -49,7 +49,7 @@ void test_read_store() {
     std::ostringstream out{};
     sl::io::streambuf_sink sink{out.rdbuf()};
     auto ptr = sl::unzip::open_zip_entry(idx, "bundle/aaa.txt");
-    sl::io::streambuf_source src{ptr.get()};
+    sl::io::streambuf_source src{ptr->rdbuf()};
     sl::io::copy_all(src, sink);
     // std::cout << "[" << out.str() << "]" << std::endl;
     slassert("aaa\n" == out.str());
@@ -63,7 +63,7 @@ void test_read_manual() {
     std::ostringstream out{};
     sl::io::streambuf_sink sink{out.rdbuf()};
     auto ptr = sl::unzip::open_zip_entry(idx, "bar/baz.txt");
-    sl::io::streambuf_source src{ptr.get()};
+    sl::io::streambuf_source src{ptr->rdbuf()};
     sl::io::copy_all(src, sink);
 //    std::cout << "[" << out.str() << "]" << std::endl;
     slassert("bye" == out.str());

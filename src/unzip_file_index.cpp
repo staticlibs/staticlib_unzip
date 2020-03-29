@@ -95,8 +95,8 @@ public:
         std::memset(src.get_buffer().data(), 0, src.get_buffer().size());
         for (int i = 0; i < cd.records_count; i++) {
             auto en = read_next_entry(src);
+            en_list.push_back(en.name);
             if (en.is_file()) {
-                en_list.push_back(en.name);
                 auto res = en_map.emplace(std::move(en.name), en.entry); // value
                 if (!res.second) throw unzip_exception(TRACEMSG(
                         "Invalid Duplicate entry: [" + (res.first)->first + "] in a zip file: [" + this->zip_file_path + "]"));
